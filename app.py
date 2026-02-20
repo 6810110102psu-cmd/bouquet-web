@@ -22,8 +22,22 @@ def home():
 def about():
     return render_template("about.html")
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        user = User.query.filter_by(username=username, password=password).first()
+
+        if user:
+            session["user_id"] = user.id
+            session["username"] = user.username
+            flash("Login successful!", "success")
+            return redirect("/")
+        else:
+            flash("Invalid username or password", "danger")
+
     return render_template("login.html")
 
 @app.route("/register", methods=["GET", "POST"])

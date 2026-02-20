@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, redirect, session, flash
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.secret_key = "bouquet-secret-key"
 
 db = SQLAlchemy(app)
 # สร้างฐานข้อมูลครั้งแรก

@@ -23,6 +23,11 @@ class Flower(db.Model):
 def home():
     return render_template("index.html")
 
+@app.route("/flowers")
+def flowers():
+    all_flowers = Flower.query.all()
+    return render_template("flowers.html", flowers=all_flowers)
+
 @app.route("/about")
 def about():
     return render_template("about.html")

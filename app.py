@@ -45,6 +45,13 @@ def flowers():
         {"id": 9, "name": "Calluna", "image": "images/flowers/9_Calluna.png"},
         {"id": 10, "name": "Tulip", "image": "images/flowers/10_Tulip.png"},
     ]
+    
+    flower = next((f for f in flowers if f["id"] == flower_id), None)
+
+    if not flower:
+        return "Flower not found", 404
+
+    
     return render_template("flowers.html", flowers=flowers)
 
 @app.route("/about")

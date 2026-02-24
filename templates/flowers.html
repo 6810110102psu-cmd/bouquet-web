@@ -1,20 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="mb-4">🌸 เลือกดอกไม้</h2>
+<h2 class="mb-4"> เลือกดอกไม้</h2>
 
 <div class="row">
     {% for flower in flowers %}
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <img src="{{ url_for('static', filename=flower.image) }}"
-                class="card-img-top"
-                style="height:200px; object-fit:cover;">
-            <div class="card-body text-center">
-                <h5>{{ flower.name }}</h5>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename=flower.image) }}"
+                    class="card-img-top"
+                    style="height:200px; object-fit:cover;">
+
+                <div class="card-body text-center">
+                    <h5>{{ flower.name }}</h5>
+
+                    <a href="/add_to_bouquet/{{ flower.id }}"
+                        class="btn btn-danger btn-sm mt-2">
+                        Add to bouquet
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     {% endfor %}
 </div>
 {% endblock %}

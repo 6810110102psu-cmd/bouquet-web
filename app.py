@@ -18,7 +18,15 @@ class Flower(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     image = db.Column(db.String(200), nullable=False)
-    
+
+from datetime import datetime
+
+class Bouquet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    flowers = db.Column(db.Text)  # เก็บเป็นข้อความ เช่น "1,2,3"
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 @app.route("/")
 def home():
     return render_template("index.html")

@@ -1,12 +1,20 @@
-<div>
-{% if session.get("username") %}
-    <span class="text-white me-2">
-        👋 {{ session.username }}
-    </span>
-    <a href="/logout" class="btn btn-light btn-sm">Logout</a>
-{% else %}
-    <a href="/login" class="btn btn-light btn-sm">Login</a>
-    <a href="/register" class="btn btn-outline-light btn-sm">Register</a>
-    <a href="/flowers" class="btn btn-outline-light btn-sm me-2">Flowers</a>
-{% endif %}
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">🌸 เลือกดอกไม้</h2>
+
+<div class="row">
+    {% for flower in flowers %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename=flower.image) }}"
+                class="card-img-top"
+                style="height:200px; object-fit:cover;">
+            <div class="card-body text-center">
+                <h5>{{ flower.name }}</h5>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
+{% endblock %}

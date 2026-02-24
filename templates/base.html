@@ -1,20 +1,34 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Bouquet Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-{% block content %}
-<h2 class="mb-4">🌸 เลือกดอกไม้</h2>
+<nav class="navbar navbar-dark bg-dark px-3">
+    <a class="navbar-brand" href="/">Bouquet</a>
 
-<div class="row">
-    {% for flower in flowers %}
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <img src="{{ url_for('static', filename=flower.image) }}"
-                class="card-img-top"
-                style="height:200px; object-fit:cover;">
-            <div class="card-body text-center">
-                <h5>{{ flower.name }}</h5>
-            </div>
-        </div>
+    <div>
+    {% if session.get("username") %}
+        <span class="text-white me-2">{{ session.username }}</span>
+        <a href="/logout" class="btn btn-light btn-sm">Logout</a>
+    {% else %}
+        <a href="/login" class="btn btn-light btn-sm">Login</a>
+        <a href="/register" class="btn btn-outline-light btn-sm">Register</a>
+        <a href="/flowers" class="btn btn-outline-light btn-sm">Flowers</a>
+        <a href="/add_to_bouquet/{{ flower.id }}" class="btn btn-danger btn-sm mt-2">
+    เลือกดอกไม้นี้
+    {% endif %}
     </div>
-    {% endfor %}
+</nav>
+
+<!-- จุดสำคัญที่สุด -->
+<div class="container mt-4">
+    {% block content %}
+    {% endblock %}
 </div>
-{% endblock %}
+
+</body>
+</html>

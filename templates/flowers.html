@@ -5,23 +5,34 @@
 <style>
 /* การ์ด */
 .card {
-    border-radius: 16px;       /* โค้งมน */
+    border-radius: 18px;       /* โค้งมน */
     overflow: hidden;          /* ให้พื้นหลังไม่ล้น */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08); /* เงานุ่ม */
+    transition: 0.25s ease;
 }
-
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.12);
+}
 /* กล่องรูปดอกไม้ */
 .flower-box {
-    height: 220px;             /* ลดจาก 260 → 220 */
+    height: 240px;             /* เพิ่มจาก 220 → 240 */
     background-color: #000000; /* สีดำ */
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 12px;
 }
 
 /* รูปดอกไม้ */
 .flower-img {
-    max-height: 85%;
-    max-width: 85%;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;           /* สำคัญมาก */
+}
+/* ตัวอักษรชื่อ */
+.card-body h5 {
+    font-weight: 600;
 }
 </style>
 

@@ -11,4 +11,8 @@
     max-height: 90%;
     max-width: 90%;
 }
+.card:hover {
+    transform: translateY(-4px);
+    transition: 0.2s;
+}
 </style>

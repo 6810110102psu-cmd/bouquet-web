@@ -3,10 +3,16 @@
 {% block content %}
 
 <style>
+/* การ์ด */
+.card {
+    border-radius: 16px;       /* โค้งมน */
+    overflow: hidden;          /* ให้พื้นหลังไม่ล้น */
+}
+
 /* กล่องรูปดอกไม้ */
 .flower-box {
-    height: 260px;
-    background-color: #000000; /* สีดำ*/
+    height: 220px;             /* ลดจาก 260 → 220 */
+    background-color: #f5f0e6; /* สีเบจ */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,8 +20,8 @@
 
 /* รูปดอกไม้ */
 .flower-img {
-    max-height: 90%;
-    max-width: 90%;
+    max-height: 85%;
+    max-width: 85%;
 }
 </style>
 

@@ -1,0 +1,14 @@
+<style>
+.flower-box {
+    height: 260px;
+    background-color: #f5f0e6; /* สีเบจ */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flower-img {
+    max-height: 90%;
+    max-width: 90%;
+}
+</style>

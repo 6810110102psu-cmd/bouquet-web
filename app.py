@@ -34,59 +34,22 @@ def home():
 @app.route("/flowers")
 def flowers():
     flowers = [
-        {
-            "id": 1,
-            "name": "Lily",
-            "image": "images/flowers/1_Lily.png"
-        },
-        {
-            "id": 2,
-            "name": "Daisy",
-            "image": "images/flowers/2_Daisy.png"
-        },
-        {
-            "id": 3,
-            "name": "Dandelion",
-            "image": "images/flowers/3_Dandelion.png"
-        },
-        {
-            "id": 4,
-            "name": "Sunflower",
-            "image": "images/flowers/4_Sunflower.png"
-        },
-        {
-            "id": 5,
-            "name": "Bluedaze",
-            "image": "images/flowers/5_Bluedaze.png"
-        },
-        {
-            "id": 6,
-            "name": "Lavendula spica",
-            "image": "images/flowers/6_Lavendula_spica.png"
-        },
-        {
-            "id": 7,
-            "name": "Peony",
-            "image": "images/flowers/7_Peony.png"
-        },
-        {
-            "id": 8,
-            "name": "Red Holly",
-            "image": "images/flowers/8_Red_Holly.png"
-        },
-        {
-            "id": 9,
-            "name": "Calluna",
-            "image": "images/flowers/9_Calluna.png"
-        },
-        {
-            "id": 10,
-            "name": "Tulip",
-            "image": "images/flowers/10_Tulip.png"
-        },
+        {"id": 1, "name": "Lily", "image": "images/flowers/1_Lily.png"},
+        {"id": 2, "name": "Daisy", "image": "images/flowers/2_Daisy.png"},
+        {"id": 3, "name": "Dandelion", "image": "images/flowers/3_Dandelion.png"},
+        {"id": 4, "name": "Sunflower", "image": "images/flowers/4_Sunflowers.png"},
+        {"id": 5, "name": "Bluedaze", "image": "images/flowers/5_Blue_daze.png"},
+        {"id": 6, "name": "Lavendula spica", "image": "images/flowers/6_Lavandula_spica.png"},
+        {"id": 7, "name": "Peony", "image": "images/flowers/7_Peony_flower.png"},
+        {"id": 8, "name": "Red Holly", "image": "images/flowers/8_Red_Holly.png"},
+        {"id": 9, "name": "Calluna", "image": "images/flowers/9_Calluna.png"},
+        {"id": 10, "name": "Tulip", "image": "images/flowers/10_Tulip.png"},
     ]
-
     return render_template("flowers.html", flowers=flowers)
+
+@app.route("/add_to_bouquet/<int:flower_id>")
+def add_to_bouquet(flower_id):
+    return f"Added flower {flower_id}"
 
 @app.route("/about")
 def about():

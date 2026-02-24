@@ -18,16 +18,12 @@
         <a href="/login" class="btn btn-light btn-sm">Login</a>
         <a href="/register" class="btn btn-outline-light btn-sm">Register</a>
         <a href="/flowers" class="btn btn-outline-light btn-sm">Flowers</a>
-        <a href="/add_to_bouquet/{{ flower.id }}" class="btn btn-danger btn-sm mt-2">
-    เลือกดอกไม้นี้
     {% endif %}
     </div>
 </nav>
 
-<!-- จุดสำคัญที่สุด -->
 <div class="container mt-4">
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
 </div>
 
 </body>

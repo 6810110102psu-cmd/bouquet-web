@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Preview Bouquet{% endblock %}
+
+{% block content %}
+<h2>💐 ช่อดอกไม้ของคุณ</h2>
+
+{% if flowers %}
+<div class="row">
+    {% for flower in flowers %}
+    <div class="col-md-3 mb-3">
+    <img src="{{ url_for('static', filename=flower.image) }}"
+        class="img-fluid rounded">
+    <p class="text-center">{{ flower.name }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>ยังไม่ได้เลือกดอกไม้</p>
+{% endif %}
+
+<a href="/flowers" class="btn btn-secondary">เพิ่มดอกไม้</a>
+{% endblock %}

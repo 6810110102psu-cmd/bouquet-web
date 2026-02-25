@@ -58,6 +58,12 @@ def add_to_bouquet(flower_id):
     flash("เพิ่มดอกไม้ลงในช่อแล้ว 🌸", "success")
     return redirect("/flowers")
 
+@app.route("/preview")
+def preview():
+    flower_ids = session.get("bouquet", [])
+    selected_flowers = Flower.query.filter(Flower.id.in_(flower_ids)).all()
+    return render_template("preview.html", flowers=selected_flowers)
+
 @app.route("/about")
 def about():
     return render_template("about.html")

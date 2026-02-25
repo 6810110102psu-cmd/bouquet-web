@@ -49,7 +49,14 @@ def flowers():
 
 @app.route("/add_to_bouquet/<int:flower_id>")
 def add_to_bouquet(flower_id):
-    return f"Added flower {flower_id}"
+    if "bouquet" not in session:
+        session["bouquet"] = []
+
+    session["bouquet"].append(flower_id)
+    session.modified = True
+
+    flash("เพิ่มดอกไม้ลงในช่อแล้ว 🌸", "success")
+    return redirect("/flowers")
 
 @app.route("/about")
 def about():

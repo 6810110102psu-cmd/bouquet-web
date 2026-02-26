@@ -18,7 +18,14 @@
         <a href="/login" class="btn btn-light btn-sm">Login</a>
         <a href="/register" class="btn btn-outline-light btn-sm">Register</a>
         <a href="/flowers" class="btn btn-outline-light btn-sm">Flowers</a>
-        <a href="/preview" class="btn btn-outline-light btn-sm me-2">My Bouquet</a>
+        <a href="/preview" class="btn btn-outline-light btn-sm me-2">
+        My Bouquet
+    {% if session.get("bouquet") %}
+        <span class="badge bg-danger ms-1">
+            {{ session["bouquet"]|length }}
+        </span>
+    {% endif %}
+</a>
         {% endif %}
     </div>
 </nav>

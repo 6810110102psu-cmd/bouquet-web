@@ -106,11 +106,30 @@ def blessing():
 
     message = random.choice(messages)
     return render_template("blessing.html", message=message)
+
 @app.route("/logout")
 def logout():
     session.clear()
     flash("Logged out successfully", "info")
     return redirect("/")
+
+@app.route("/save_bouquet")
+def save_bouquet():
+    flower_ids = session.get("bouquet", [])
+
+    if not flower_ids:
+        flash("ยังไม่มีดอกไม้ในช่อ", "warning")
+        return redirect("/flowers")
+
+    bouquet = Bouquet(
+        user_id=session.get("user_id"),
+        flowers=",".join(map(str, flower_ids))
+    )
+    db.session.add(bouquet)
+    db.session.commit()
+
+    flash("บันทึกช่อดอกไม้เรียบร้อย", "success")
+    return redirect("/final")
 
 if __name__ == "__main__":
     with app.app_context():

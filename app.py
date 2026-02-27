@@ -92,6 +92,10 @@ def register():
 
     return render_template("register.html")
 
+@app.route("/blessing")
+def blessing():
+    return render_template("blessing.html")
+
 @app.route("/logout")
 def logout():
     session.clear()

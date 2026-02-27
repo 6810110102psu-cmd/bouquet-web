@@ -11,6 +11,11 @@
     <img src="{{ url_for('static', filename=flower.image) }}"
         class="img-fluid rounded">
     <p class="text-center">{{ flower.name }}</p>
+    <div class="text-center mt-4">
+    <a href="/blessing" class="btn btn-pink btn-lg">
+        รับคำอวยพร
+    </a>
+</div>
     </div>
     {% endfor %}
 </div>

@@ -131,6 +131,16 @@ def save_bouquet():
     flash("บันทึกช่อดอกไม้เรียบร้อย", "success")
     return redirect("/final")
 
+@app.route("/remove/<int:flower_id>")
+def remove_flower(flower_id):
+    if "bouquet" in session:
+        session["bouquet"] = [
+            f for f in session["bouquet"] if f != flower_id
+        ]
+        session.modified = True
+
+    return redirect("/preview")
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

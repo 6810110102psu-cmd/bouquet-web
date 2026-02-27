@@ -94,7 +94,8 @@ def register():
 
 @app.route("/blessing")
 def blessing():
-    return render_template("blessing.html")
+    message = "ขอให้วันนี้เป็นวันที่ดี 🌷"
+    return render_template("blessing.html", message=message)
 
 @app.route("/logout")
 def logout():

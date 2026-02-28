@@ -79,6 +79,20 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/my-bouquet")
+def my_bouquet():
+    bouquet_ids = session.get("bouquet", [])
+
+    bouquet_flowers = [
+        flower for flower in flowers
+        if flower["id"] in bouquet_ids
+    ]
+
+    return render_template(
+        "my_bouquets.html",
+        bouquet_flowers=bouquet_flowers
+    )
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -92,6 +106,31 @@ def register():
         return redirect("/login")
 
     return render_template("register.html")
+
+@app.route("/recommended")
+def recommended():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    bouquets = [
+        {
+            "name": "Sweet Admiration",
+            "image": "images/sample/sample1.png",
+            "description": "ช่อกล้วยไม้สีชมพูโดดเด่น แทนความชื่นชมและความรักที่อ่อนโยน\nล้อมรอบด้วยดอกยิปโซสีขาว ให้ความรู้สึกโรแมนติก น่าทะนุถนอม\nเป็นช่อดอกไม้ที่บอกความในใจได้โดยไม่ต้องใช้คำพูด\nเหมาะสำหรับคนพิเศษในช่วงเวลาพิเศษ"
+        },
+        {
+            "name": "Pure Grace",
+            "image": "images/sample/sample2.png",
+            "description": "ช่อดอกไม้ที่ผสมผสานความบริสุทธิ์ของทิวลิปสีขาว\nเข้ากับความอ่อนหวานสง่างามของหน้าวัวสีชมพูอ่อน\nสื่อถึงความจริงใจความเคารพ และความรู้สึกดี ๆ ที่มอบให้จากใจ"
+        },
+        {
+            "name": "Blue Serenity",
+            "image": "images/sample/sample3.png",
+            "description": "ช่อดอกไฮเดรนเยียสีฟ้าโทนสุภาพ ให้ความรู้สึกสงบ อ่อนโยน และจริงใจ\nสีฟ้าสื่อถึงความมั่นคง ความเข้าใจ และความสบายใจ เหมาะสำหรับมอบให้คนสำคัญ\nในวันที่อยากบอกว่า “ขอบคุณที่อยู่ข้างกันเสมอ”"
+        }
+    ]
+
+    return render_template("recommended.html", bouquets=bouquets)
 
 import random
 

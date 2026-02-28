@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">ช่อดอกไม้ของฉัน</h2>
+
+{% if bouquet_flowers %}
+<div class="row">
+    {% for flower in bouquet_flowers %}
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm border-0">
+
+            <div class="flower-box">
+                <img src="{{ url_for('static', filename=flower.image) }}"
+                    class="flower-img">
+            </div>
+
+            <div class="card-body text-center">
+                <h6>{{ flower.name }}</h6>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="alert alert-secondary">
+    ยังไม่มีดอกไม้ในช่อ
+</div>
+{% endif %}
+
+{% endblock %}

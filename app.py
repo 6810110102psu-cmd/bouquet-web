@@ -29,7 +29,25 @@ class Bouquet(db.Model):
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    bouquets = [
+        {
+            "name": "Sweet Admiration",
+            "image": "images/sample/s1.png",
+            "description": "ช่อกล้วยไม้สีชมพูโดดเด่น แทนความชื่นชมและความรักที่อ่อนโยน\nล้อมรอบด้วยดอกยิปโซสีขาว ให้ความรู้สึกโรแมนติก น่าทะนุถนอม\nเป็นช่อดอกไม้ที่บอกความในใจได้โดยไม่ต้องใช้คำพูด\nเหมาะสำหรับคนพิเศษในช่วงเวลาพิเศษ"
+        },
+        {
+            "name": "Pure Grace",
+            "image": "images/sample/s2.png",
+            "description": "ช่อดอกไม้ที่ผสมผสานความบริสุทธิ์ของทิวลิปสีขาว\nเข้ากับความอ่อนหวานสง่างามของหน้าวัวสีชมพูอ่อน\nสื่อถึงความจริงใจความเคารพ และความรู้สึกดี ๆ ที่มอบให้จากใจ"
+        },
+        {
+            "name": "Blue Serenity",
+            "image": "images/sample/s3.png",
+            "description": "ช่อดอกไฮเดรนเยียสีฟ้าโทนสุภาพ ให้ความรู้สึกสงบ อ่อนโยน และจริงใจ\nสีฟ้าสื่อถึงความมั่นคง ความเข้าใจ และความสบายใจ เหมาะสำหรับมอบให้คนสำคัญ\nในวันที่อยากบอกว่า “ขอบคุณที่อยู่ข้างกันเสมอ”"
+        }
+    ]
+
+    return render_template("index.html", bouquets=bouquets)
 
 @app.route("/flowers")
 def flowers():

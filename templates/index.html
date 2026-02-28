@@ -4,60 +4,40 @@
 {% if not session.get("user_id") %}
 
 <h2 class="mb-3">ตัวอย่างช่อดอกไม้</h2>
-<p class="text-muted">
-    จัดช่อดอกไม้ในแบบของคุณเอง สมัครสมาชิกเพื่อเริ่มต้น
-</p>
 
 <div class="row">
-    <!-- ตัวอย่างช่อ 1 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm border-0">
-            <div class="flower-box">
-                <img src="{{ url_for('static', filename='images/sample/sample1.png') }}"
-                    class="flower-img">
-            </div>
-            <div class="card-body text-center">
-                <h5>Sweet White Bouquet</h5>
-            </div>
-        </div>
+    {% for bouquet in bouquets %}
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Bouquet for you 💐</h2>
+        <p class="text-muted">
+            เลือกช่อดอกไม้ที่ถ่ายทอดความรู้สึกแทนใจ  
+            สมัครสมาชิกเพื่อเริ่มจัดช่อในแบบของคุณ
+        </p>
     </div>
+    <div class="col-md-4 mb-5">
+        <div class="gift-card">
+            <div class="gift-image">
+                <img src="{{ url_for('static', filename=bouquet.image) }}">
+            </div>
 
-    <!-- ตัวอย่างช่อ 2 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm border-0">
-            <div class="flower-box">
-                <img src="{{ url_for('static', filename='images/sample/sample2.png') }}"
-                    class="flower-img">
-            </div>
-            <div class="card-body text-center">
-                <h5>Romantic Pink Bouquet</h5>
+            <div class="gift-body">
+                <h5 class="gift-title">{{ bouquet.name }}</h5>
+                <p class="gift-desc">{{ bouquet.description }}</p>
             </div>
         </div>
     </div>
-
-    <!-- ตัวอย่างช่อ 3 -->
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm border-0">
-            <div class="flower-box">
-                <img src="{{ url_for('static', filename='images/sample/sample3.png') }}"
-                    class="flower-img">
-            </div>
-            <div class="card-body text-center">
-                <h5>Sunny Yellow Bouquet</h5>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>
 
 <div class="text-center mt-4">
-    <a href="/register" class="btn btn-danger btn-lg">
-        สมัครสมาชิกเพื่อจัดช่อดอกไม้
+    <a href="/login" class="btn btn-dark btn-lg">
+        Login เพื่อจัดช่อดอกไม้
     </a>
 </div>
 
 {% else %}
 
-<h2>ยินดีต้อนรับ {{ session.username }} </h2>
+<h2>ยินดีต้อนรับ {{ session.username }}</h2>
 <p>ไปจัดช่อดอกไม้ของคุณกันเลย</p>
 
 <a href="/flowers" class="btn btn-danger">

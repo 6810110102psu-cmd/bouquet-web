@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>เลือกดอกไม้ลงช่อ</h2>
+
+<form method="post">
+{% for f in flowers %}
+    <p>
+        {{ f.name }} ({{ f.price }} บาท/ดอก)
+        <input type="number" name="{{ f.id }}" value="0" min="0">
+    </p>
+{% endfor %}
+
+<button type="submit">ถัดไป</button>
+</form>
+{% endblock %}

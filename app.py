@@ -80,23 +80,49 @@ def logout():
     session.clear()
     return redirect("/")
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        db.session.add(
-            User(
-                username=request.form["username"],
-                password=request.form["password"]
-            )
-        )
-        db.session.commit()
-        return redirect("/login")
 
-    return render_template("register.html")
 
 # ------------------
 # Create Bouquet Flow
 # ------------------
+
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/flowers")
+def flowers():
+    flowers = [
+        {"id": 1, "name": "Lily of the Valley", "price": 120, "image": "images/flowers/1.png"},
+        {"id": 2, "name": "White Rose", "price": 40, "image": "images/flowers/2.png"},
+        {"id": 3, "name": "Dusty Purple Rose", "price": 60, "image": "images/flowers/3.png"},
+        {"id": 4, "name": "Waxflower", "price": 30, "image": "images/flowers/4.png"},
+        {"id": 5, "name": "Carnation", "price": 25, "image": "images/flowers/5.png"},
+        {"id": 6, "name": "Gerbera", "price": 30, "image": "images/flowers/6.png"},
+        {"id": 7, "name": "Hydrangea", "price": 150, "image": "images/flowers/7.png"},
+        {"id": 8, "name": "Tulip", "price": 80, "image": "images/flowers/8.png"},
+        {"id": 9, "name": "Hyacinth", "price": 70, "image": "images/flowers/9.png"},
+        {"id": 10, "name": "Calla Lily", "price": 90, "image": "images/flowers/10.png"},
+        {"id": 11, "name": "Phalaenopsis Orchid", "price": 180, "image": "images/flowers/11.png"},
+        {"id": 12, "name": "Marigold", "price": 15, "image": "images/flowers/12.png"},
+        {"id": 13, "name": "Daisy", "price": 20, "image": "images/flowers/13.png"},
+        {"id": 14, "name": "Anthurium", "price": 100, "image": "images/flowers/14.png"},
+        {"id": 15, "name": "Sunflower", "price": 35, "image": "images/flowers/15.png"},
+        {"id": 16, "name": "Aster", "price": 25, "image": "images/flowers/16.png"},
+        {"id": 17, "name": "Gypsophila", "price": 20, "image": "images/flowers/17.png"},
+        {"id": 18, "name": "Lily", "price": 90, "image": "images/flowers/18.png"},
+        {"id": 19, "name": "Eucalyptus", "price": 35, "image": "images/flowers/19.png"},
+    ]
+
+    return render_template("flowers.html", flowers=flowers)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 @app.route("/create-bouquet", methods=["GET", "POST"])
 def create_bouquet():
     if not login_required():

@@ -1,26 +1,4 @@
-<style>
-/* ===== Animation ตอนโหลด ===== */
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }/* ===== Animation ตอนโหลด ===== */
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===== การ์ดดอกไม้ ===== */
+/* ===== Flower Card ===== */
 .flower-card {
     width: 200px;
     border-radius: 18px;
@@ -28,86 +6,10 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     overflow: hidden;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-
-    /* animation ตอนโหลด */
     animation: fadeUp 0.4s ease both;
 }
 
-/* hover การ์ด */
 .flower-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(0,0,0,0.12);
-}
-
-/* ===== กล่องรูป (จัตุรัส + พื้นหลังดำ) ===== */
-.flower-box {
-    width: 100%;
-    aspect-ratio: 1 / 1;   /* ทำให้เป็นสี่เหลี่ยมจัตุรัส */
-    background-color: #000; /* สีดำ*/
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-/* ===== รูปดอกไม้ ===== */
-.flower-img {
-    max-width: 85%;
-    max-height: 85%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-
-/* hover ขยายรูป */
-.flower-card:hover .flower-img {
-    transform: scale(1.08);
-}
-
-/* ===== เนื้อหาด้านล่าง ===== */
-.flower-body {
-    text-align: center;
-    padding: 14px;
-}
-
-/* ชื่อดอกไม้ */
-.flower-body h5 {
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-}
-
-/* การ์ด */
-.card {
-    border-radius: 18px;
-    background: var(--card-bg, #fff);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    padding: 1rem;
-    animation: fadeUp 360ms ease both;
-}
-```// filepath: flowers.css
-/* ===== Animation ตอนโหลด ===== */
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* การ์ด */
-.card {
-    border-radius: 18px;
-    background: var(--card-bg, #fff);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    padding: 1rem;
-    animation: fadeUp 360ms ease both;
-}
-
-/* hover การ์ด */
-.card:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 28px rgba(0,0,0,0.12);
 }
@@ -115,15 +17,14 @@
 /* กล่องรูป */
 .flower-box {
     width: 100%;
-    height: 220px;
-    background-color: #f6f1e7;
+    aspect-ratio: 1 / 1;
+    background-color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
 }
 
-/* รูปดอกไม้ */
+/* รูป */
 .flower-img {
     max-width: 85%;
     max-height: 85%;
@@ -131,30 +32,28 @@
     transition: transform 0.3s ease;
 }
 
-/* hover ขยายรูป */
-.card:hover .flower-img {
+.flower-card:hover .flower-img {
     transform: scale(1.08);
 }
 
-/* เนื้อหาด้านล่าง */
-.card-body {
+/* เนื้อหา */
+.flower-body {
     text-align: center;
     padding: 14px;
 }
 
-/* ชื่อดอกไม้ */
-.card-body h5 {
+.flower-body h5 {
     font-weight: 600;
     margin-bottom: 10px;
 }
-/* 🎁 Gift Card Style */
+
+/* ===== Gift Card ===== */
 .gift-card {
     background: #fff;
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.08);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
 }
 
 .gift-card:hover {
@@ -162,7 +61,6 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
-/* รูปภาพ */
 .gift-image {
     background: linear-gradient(135deg, #f8f9fa, #f1f3f5);
     padding: 20px;
@@ -170,12 +68,10 @@
 }
 
 .gift-image img {
-    max-width: 100%;
     height: 260px;
     object-fit: contain;
 }
 
-/* เนื้อหา */
 .gift-body {
     padding: 18px 20px 24px;
     text-align: center;
@@ -189,7 +85,5 @@
 .gift-desc {
     font-size: 0.9rem;
     color: #666;
-    white-space: pre-line;
     line-height: 1.6;
 }
-</style>

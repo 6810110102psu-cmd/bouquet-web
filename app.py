@@ -152,8 +152,14 @@ def history():
         user_id=session["user_id"]
     ).order_by(Bouquet.created_at.desc()).all()
 
-    return render_template("history.html", bouquets=bouquets)
+    flower_map = {f.id: f.name for f in Flower.query.all()}
 
+    return render_template(
+        "history.html",
+        bouquets=bouquets,
+        flower_map=flower_map
+    )
+    
 @app.route("/final")
 def final():
     return render_template("final.html")

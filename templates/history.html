@@ -9,7 +9,9 @@
     <li class="list-group-item">
         <strong>ช่อที่ {{ loop.index }}</strong><br>
         วันที่: {{ bouquet.created_at.strftime("%d/%m/%Y %H:%M") }}<br>
-        ดอกไม้: {{ bouquet.flowers }}
+        ดอกไม้:
+        {% for fid in bouquet.flowers.split(",") %}
+            {{ flower_map[fid|int] }}{% if not loop.last %}, {% endif %}
     </li>
     {% endfor %}
 </ul>

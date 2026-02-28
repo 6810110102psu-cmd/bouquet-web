@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>ข้อมูลการจัดส่ง</h2>
+
+<form method="post">
+    <p>
+        ชื่อ-สกุล<br>
+        <input type="text" name="fullname" required>
+    </p>
+
+    <p>
+        เบอร์โทรศัพท์<br>
+        <input type="text" name="phone" required>
+    </p>
+
+    <p>
+        วิธีรับสินค้า<br>
+        <select name="method" required>
+            <option value="รับหน้าร้าน">รับหน้าร้าน</option>
+            <option value="จัดส่ง">จัดส่ง</option>
+        </select>
+    </p>
+
+    <p>
+        ที่อยู่ / วันที่ / เวลา<br>
+        <textarea name="detail" rows="3" required></textarea>
+    </p>
+
+    <button type="submit">ถัดไป</button>
+</form>
+{% endblock %}

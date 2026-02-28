@@ -3,21 +3,27 @@
 
 {% if not session.get("user_id") %}
 
-<h2 class="mb-3">ตัวอย่างช่อดอกไม้</h2>
+<h2 class="mb-4 text-center">ช่อดอกไม้แนะนำ</h2>
 
 <div class="row">
     {% for bouquet in bouquets %}
-    <div class="text-center mb-5">
-    </div>
-    <div class="col-md-4 mb-5">
-        <div class="gift-card">
-            <div class="gift-image">
-                <img src="{{ url_for('static', filename=bouquet.image) }}">
+    <div class="col-md-4 mb-4">
+        <div class="gift-card h-100">
+            <div class="gift-image text-center">
+                <img
+                    src="{{ url_for('static', filename=bouquet.image) }}"
+                    class="img-fluid"
+                    alt="{{ bouquet.name }}"
+                >
             </div>
 
-            <div class="gift-body">
-                <h5 class="gift-title">{{ bouquet.name }}</h5>
-                <p class="gift-desc">{{ bouquet.description }}</p>
+            <div class="gift-body p-3">
+                <h5 class="gift-title text-center">
+                    {{ bouquet.name }}
+                </h5>
+                <p class="gift-desc">
+                    {{ bouquet.description }}
+                </p>
             </div>
         </div>
     </div>
@@ -26,18 +32,20 @@
 
 <div class="text-center mt-4">
     <a href="/login" class="btn btn-dark btn-lg">
-        Login เพื่อจัดช่อดอกไม้
+        Login เพื่อเริ่มจัดช่อดอกไม้
     </a>
 </div>
 
 {% else %}
 
-<h2>ยินดีต้อนรับ {{ session.username }}</h2>
-<p>ไปจัดช่อดอกไม้ของคุณกันเลย</p>
+<div class="text-center">
+    <h2 class="mb-3">ยินดีต้อนรับ {{ session.username }}</h2>
+    <p class="mb-4">เริ่มต้นจัดช่อดอกไม้ในแบบของคุณได้เลย</p>
 
-<a href="/flowers" class="btn btn-danger">
-    เลือกดอกไม้
-</a>
+    <a href="/create-bouquet" class="btn btn-danger btn-lg">
+        เริ่มจัดช่อดอกไม้
+    </a>
+</div>
 
 {% endif %}
 

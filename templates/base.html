@@ -17,16 +17,19 @@
     <a class="navbar-brand" href="/">Bouquet</a>
 
     <div class="d-flex gap-2">
+
         {% if session.get("user_id") %}
             <!-- login แล้ว -->
             <a href="/flowers" class="btn btn-outline-light">Flowers</a>
-            <a href="/recommended" class="btn btn-outline-light">Recommended</a>
+            <a href="/history" class="btn btn-outline-light">History</a>
             <a href="/logout" class="btn btn-outline-light">Logout</a>
+
         {% else %}
             <!-- guest -->
             <a href="/login" class="btn btn-outline-light">Login</a>
             <a href="/flowers" class="btn btn-outline-light">Flowers</a>
         {% endif %}
+
     </div>
 </nav>
 

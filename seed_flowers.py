@@ -27,3 +27,7 @@ with app.app_context():
     db.session.commit()
     
     print("Seed flowers completed!")
+    
+    if Flower.query.first():
+        print("Flowers already seeded")
+        exit()

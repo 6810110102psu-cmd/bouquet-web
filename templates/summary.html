@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>สรุปรายการสั่งซื้อ</h2>
+
+<h3>ดอกไม้ที่เลือก</h3>
+<ul>
+{% for name, f in bouquet.flowers.items() %}
+  <li>{{ name }} x {{ f.qty }} ดอก = {{ f.qty * f.price }} บาท</li>
+{% endfor %}
+</ul>
+
+<p>ค่าจัดช่อ: {{ fee }} บาท</p>
+
+<h3>รายละเอียดการจัดช่อ</h3>
+<p>ขนาดช่อ: {{ bouquet.size }}</p>
+<p>สไตล์: {{ bouquet.style }}</p>
+<p>ธีม: {{ bouquet.theme }}</p>
+<p>ข้อความการ์ด: {{ bouquet.card }}</p>
+
+<h3>ข้อมูลลูกค้า</h3>
+{% for k, v in bouquet.customer.items() %}
+<p>{{ k }} : {{ v }}</p>
+{% endfor %}
+
+<h2>ราคารวมทั้งหมด: {{ bouquet.total }} บาท</h2>
+
+<a href="/payment">ยืนยันและไปชำระเงิน</a>
+{% endblock %}

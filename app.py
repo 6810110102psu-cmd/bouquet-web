@@ -156,21 +156,6 @@ def recommended():
 
     return render_template("recommended.html", bouquets=bouquets)
 
-import random
-
-@app.route("/blessing")
-def blessing():
-    messages = [
-        "ขอให้เต็มไปด้วยรอยยิ้ม",
-        "ขอให้มีความสุขในทุกวัน",
-        "ขอให้สมหวังในสิ่งที่ตั้งใจ",
-        "ขอให้วันนี้อ่อนโยนกับหัวใจคุณ",
-        "ขอให้ความรักรายล้อมคุณเสมอ"
-    ]
-
-    message = random.choice(messages)
-    return render_template("blessing.html", message=message)
-
 @app.route("/logout")
 def logout():
     session.clear()

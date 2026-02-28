@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>เลือกสไตล์การจัดช่อ</h2>
+
+<form method="post">
+
+    <p>
+        <label>อธิบายสไตล์การจัดช่อ</label><br>
+        <textarea name="style" rows="3"></textarea>
+    </p>
+
+    <p>
+        <label>เลือกธีม / สีกระดาษห่อ (เลือก 1 สี)</label><br>
+
+        <select name="theme" id="themeSelect" required
+                style="padding: 6px; border-radius: 6px;">
+            <option value="ขาว" data-color="#ffffff">ขาว</option>
+            <option value="ดำ" data-color="#000000">ดำ</option>
+            <option value="ชมพู" data-color="#f8c8dc">ชมพู</option>
+            <option value="ฟ้า" data-color="#bde7ff">ฟ้า</option>
+            <option value="น้ำเงิน" data-color="#1e3a8a">น้ำเงิน</option>
+            <option value="เขียวชาเขียวอ่อน" data-color="#c7e6c1">เขียวชาเขียวอ่อน</option>
+            <option value="ม่วงอ่อน" data-color="#e6d9ff">ม่วงอ่อน</option>
+            <option value="ครีม/เบจ" data-color="#f5f5dc">ครีม / เบจ</option>
+        </select>
+    </p>
+
+    <p>
+        <label>ข้อความในการ์ด</label><br>
+        <textarea name="card" rows="2"></textarea>
+    </p>
+
+    <button type="submit">ถัดไป</button>
+</form>
+
+<script>
+    const select = document.getElementById("themeSelect");
+
+    function updateThemeColor() {
+        const color = select.options[select.selectedIndex].dataset.color;
+        select.style.backgroundColor = color;
+
+        // ถ้าสีเข้ม ให้ตัวหนังสือเป็นขาว
+        if (color === "#000000" || color === "#1e3a8a") {
+            select.style.color = "white";
+        } else {
+            select.style.color = "black";
+        }
+    }
+
+    select.addEventListener("change", updateThemeColor);
+    updateThemeColor();
+</script>
+
+{% endblock %}

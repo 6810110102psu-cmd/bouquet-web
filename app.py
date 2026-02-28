@@ -46,6 +46,7 @@ def add_to_bouquet(flower_id):
 
     flash("เพิ่มดอกไม้ลงในช่อแล้ว", "success")
     return redirect("/flowers")
+
 @app.route("/preview")
 def preview():
     flower_ids = session.get("bouquet", [])

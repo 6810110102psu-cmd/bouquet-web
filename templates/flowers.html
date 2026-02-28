@@ -7,23 +7,22 @@
 
 <div class="row">
     {% for flower in flowers %}
-    <div class="card flower-card shadow-sm border-0">
-        
-        <div class="flower-box">
-            <img src="{{ url_for('static', filename=flower.image) }}"
-                class="flower-img">
-        </div>
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card flower-card shadow-sm border-0">
+            <div class="flower-box">
+                <img src="{{ url_for('static', filename=flower.image) }}"
+                    class="flower-img">
+            </div>
+            <div class="card-body flower-body">
+                <h5>{{ flower.name }}</h5>
+                <a href="/add_to_bouquet/{{ flower.id }}"
+                    class="btn btn-danger btn-sm">
+                    Add to bouquet
+                </a>
+            </div>
 
-        <div class="card-body flower-body">
-            <h5>{{ flower.name }}</h5>
-            <a href="/add_to_bouquet/{{ flower.id }}"
-                class="btn btn-danger btn-sm">
-                Add to bouquet
-            </a>
         </div>
-
     </div>
     {% endfor %}
 </div>
-
 {% endblock %}

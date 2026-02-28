@@ -38,13 +38,19 @@ def flowers():
 
 @app.route("/add_to_bouquet/<int:flower_id>")
 def add_to_bouquet(flower_id):
-    bouquet = session.get("bouquet", [])
+    # Guard: ต้องล็อกอินก่อน
+    if "user_id" not in session:
+        flash("กรุณาเข้าสู่ระบบก่อนเพิ่มดอกไม้", "warning")
+        return redirect("/login")
 
-    bouquet.append(flower_id)
+    # เตรียม session bouquet
+    if "bouquet" not in session:
+        session["bouquet"] = []
 
-    session["bouquet"] = bouquet
+    session["bouquet"].append(flower_id)
+    session.modified = True
+
     flash("เพิ่มดอกไม้ลงในช่อแล้ว", "success")
-
     return redirect("/flowers")
 
 @app.route("/preview")
@@ -115,17 +121,17 @@ def recommended():
     bouquets = [
         {
             "name": "Sweet Admiration",
-            "image": "images/sample/sample1.png",
+            "image": "images/sample/s1.png",
             "description": "ช่อกล้วยไม้สีชมพูโดดเด่น แทนความชื่นชมและความรักที่อ่อนโยน\nล้อมรอบด้วยดอกยิปโซสีขาว ให้ความรู้สึกโรแมนติก น่าทะนุถนอม\nเป็นช่อดอกไม้ที่บอกความในใจได้โดยไม่ต้องใช้คำพูด\nเหมาะสำหรับคนพิเศษในช่วงเวลาพิเศษ"
         },
         {
             "name": "Pure Grace",
-            "image": "images/sample/sample2.png",
+            "image": "images/sample/s2.png",
             "description": "ช่อดอกไม้ที่ผสมผสานความบริสุทธิ์ของทิวลิปสีขาว\nเข้ากับความอ่อนหวานสง่างามของหน้าวัวสีชมพูอ่อน\nสื่อถึงความจริงใจความเคารพ และความรู้สึกดี ๆ ที่มอบให้จากใจ"
         },
         {
             "name": "Blue Serenity",
-            "image": "images/sample/sample3.png",
+            "image": "images/sample/s3.png",
             "description": "ช่อดอกไฮเดรนเยียสีฟ้าโทนสุภาพ ให้ความรู้สึกสงบ อ่อนโยน และจริงใจ\nสีฟ้าสื่อถึงความมั่นคง ความเข้าใจ และความสบายใจ เหมาะสำหรับมอบให้คนสำคัญ\nในวันที่อยากบอกว่า “ขอบคุณที่อยู่ข้างกันเสมอ”"
         }
     ]

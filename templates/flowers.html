@@ -9,20 +9,32 @@
     {% for flower in flowers %}
     <div class="col-md-3 col-sm-6 mb-4">
         <div class="card flower-card shadow-sm border-0">
+
             <div class="flower-box">
                 <img src="{{ url_for('static', filename=flower.image) }}"
                     class="flower-img">
             </div>
-            <div class="card-body flower-body">
+
+            <div class="card-body flower-body text-center">
                 <h5>{{ flower.name }}</h5>
-                <a href="/add_to_bouquet/{{ flower.id }}"
-                    class="btn btn-danger btn-sm">
-                    Add to bouquet
-                </a>
+
+                {% if session.get("user_id") %}
+                    <!-- คนที่ล็อกอินแล้ว -->
+                    <a href="/add_to_bouquet/{{ flower.id }}"
+                        class="btn btn-danger btn-sm mt-2">
+                        Add to bouquet
+                    </a>
+                {% else %}
+                    <!-- คนทั่วไป -->
+                    <small class="text-muted d-block mt-2">
+                        Login เพื่อเพิ่มลงช่อดอกไม้
+                    </small>
+                {% endif %}
             </div>
 
         </div>
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

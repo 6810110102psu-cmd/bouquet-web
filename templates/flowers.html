@@ -3,38 +3,53 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/flowers.css') }}">
 
-<h2 class="mb-4">เลือกดอกไม้</h2>
+<h2 class="mb-4 text-center">เลือกดอกไม้</h2>
 
-<div class="row">
-    {% for flower in flowers %}
-    <div class="col-md-3 col-sm-6 mb-4">
-        <div class="card flower-card shadow-sm border-0">
+<form method="post">
+    <div class="row">
+        {% for flower in flowers %}
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card flower-card shadow-sm border-0 h-100">
 
-            <div class="flower-box">
-                <img src="{{ url_for('static', filename=flower.image) }}"
-                    class="flower-img">
+                <div class="flower-box text-center">
+                    <img
+                        src="{{ url_for('static', filename=flower.image) }}"
+                        class="flower-img"
+                        alt="{{ flower.name }}"
+                    >
+                </div>
+
+                <div class="card-body flower-body text-center">
+                    <h5>{{ flower.name }}</h5>
+                    <p class="text-muted">{{ flower.price }} บาท / ดอก</p>
+
+                    {% if session.get("user_id") %}
+                        <input
+                            type="number"
+                            name="{{ flower.id }}"
+                            min="0"
+                            value="0"
+                            class="form-control text-center"
+                        >
+                    {% else %}
+                        <small class="text-muted">
+                            Login เพื่อเลือกดอกไม้
+                        </small>
+                    {% endif %}
+                </div>
+
             </div>
-
-            <div class="card-body flower-body text-center">
-                <h5>{{ flower.name }}</h5>
-
-                {% if session.get("user_id") %}
-                    <!-- คนที่ล็อกอินแล้ว -->
-                    <a href="/add_to_bouquet/{{ flower.id }}"
-                        class="btn btn-danger btn-sm mt-2">
-                        Add to bouquet
-                    </a>
-                {% else %}
-                    <!-- คนทั่วไป -->
-                    <small class="text-muted d-block mt-2">
-                        Login เพื่อเพิ่มลงช่อดอกไม้
-                    </small>
-                {% endif %}
-            </div>
-
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
+
+    {% if session.get("user_id") %}
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-danger btn-lg">
+            ถัดไป
+        </button>
+    </div>
+    {% endif %}
+</form>
 
 {% endblock %}

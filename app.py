@@ -115,21 +115,23 @@ def logout():
 
 @app.route("/save_bouquet")
 def save_bouquet():
+    if "user_id" not in session:
+        flash("กรุณาเข้าสู่ระบบก่อนบันทึกช่อดอกไม้", "warning")
+        return redirect("/login")
+
     flower_ids = session.get("bouquet", [])
 
-    if not flower_ids:
-        flash("ยังไม่มีดอกไม้ในช่อ", "warning")
-        return redirect("/flowers")
-
     bouquet = Bouquet(
-        user_id=session.get("user_id"),
+        user_id=session["user_id"],
         flowers=",".join(map(str, flower_ids))
     )
     db.session.add(bouquet)
     db.session.commit()
 
+    session.pop("bouquet", None)  # เคลียร์ช่อหลังบันทึก
     flash("บันทึกช่อดอกไม้เรียบร้อย", "success")
-    return redirect("/final")
+
+    return redirect("/history")
 
 @app.route("/remove/<int:flower_id>")
 def remove_flower(flower_id):

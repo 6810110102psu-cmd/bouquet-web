@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session, flash, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request, redirect, session, flash
+from datetime import datetime
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
@@ -8,7 +8,10 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = "bouquet-secret-key"
 
 db = SQLAlchemy(app)
-# สร้างฐานข้อมูลครั้งแรก
+
+# ------------------
+# Models
+# ------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -17,208 +20,180 @@ class User(db.Model):
 class Flower(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Integer, default=50)
     image = db.Column(db.String(200), nullable=False)
-
-from datetime import datetime
 
 class Bouquet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
-    flowers = db.Column(db.Text)  # เก็บเป็นข้อความ เช่น "1,2,3"
+    size = db.Column(db.String(20))
+    flowers = db.Column(db.Text)  # "1:2,3:1"
+    style = db.Column(db.String(100))
+    theme = db.Column(db.String(100))
+    card = db.Column(db.String(200))
+    total_price = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+# ------------------
+# Bouquet Size Config
+# ------------------
+BOUQUET_SIZE = {
+    "small": {"fee": 200},
+    "medium": {"fee": 300},
+    "large": {"fee": 500},
+}
+
+# ------------------
+# Helper
+# ------------------
+def login_required():
+    if "user_id" not in session:
+        flash("กรุณาเข้าสู่ระบบก่อน", "warning")
+        return False
+    return True
+
+# ------------------
+# Routes
+# ------------------
 @app.route("/")
 def home():
-    bouquets = [
-        {
-            "name": "Sweet Admiration",
-            "image": "images/sample/s1.png",
-            "description": "ช่อกล้วยไม้สีชมพูโดดเด่น แทนความชื่นชมและความรักที่อ่อนโยน\nล้อมรอบด้วยดอกยิปโซสีขาว ให้ความรู้สึกโรแมนติก น่าทะนุถนอม\nเป็นช่อดอกไม้ที่บอกความในใจได้โดยไม่ต้องใช้คำพูด\nเหมาะสำหรับคนพิเศษในช่วงเวลาพิเศษ"
-        },
-        {
-            "name": "Pure Grace",
-            "image": "images/sample/s2.png",
-            "description": "ช่อดอกไม้ที่ผสมผสานความบริสุทธิ์ของทิวลิปสีขาว\nเข้ากับความอ่อนหวานสง่างามของหน้าวัวสีชมพูอ่อน\nสื่อถึงความจริงใจความเคารพ และความรู้สึกดี ๆ ที่มอบให้จากใจ"
-        },
-        {
-            "name": "Blue Serenity",
-            "image": "images/sample/s3.png",
-            "description": "ช่อดอกไฮเดรนเยียสีฟ้าโทนสุภาพ ให้ความรู้สึกสงบ อ่อนโยน และจริงใจ\nสีฟ้าสื่อถึงความมั่นคง ความเข้าใจ และความสบายใจ เหมาะสำหรับมอบให้คนสำคัญ\nในวันที่อยากบอกว่า “ขอบคุณที่อยู่ข้างกันเสมอ”"
-        }
-    ]
-
-    return render_template("index.html", bouquets=bouquets)
-
-@app.route("/flowers")
-def flowers():
-    flowers = Flower.query.all()
-    return render_template("flowers.html", flowers=flowers)
-
-@app.route("/add_to_bouquet/<int:flower_id>")
-def add_to_bouquet(flower_id):
-    # Guard: ต้องล็อกอินก่อน
-    if "user_id" not in session:
-        flash("กรุณาเข้าสู่ระบบก่อนเพิ่มดอกไม้", "warning")
-        return redirect("/login")
-
-    # เตรียม session bouquet
-    if "bouquet" not in session:
-        session["bouquet"] = []
-
-    session["bouquet"].append(flower_id)
-    session.modified = True
-
-    flash("เพิ่มดอกไม้ลงในช่อแล้ว", "success")
-    return redirect("/flowers")
-
-@app.route("/preview")
-def preview():
-    flower_ids = session.get("bouquet", [])
-
-    selected_flowers = Flower.query.filter(
-        Flower.id.in_(flower_ids)
-    ).all()
-
-    return render_template("preview.html", flowers=selected_flowers)
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
+    return render_template("index.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        user = User.query.filter_by(username=username, password=password).first()
+        user = User.query.filter_by(
+            username=request.form["username"],
+            password=request.form["password"]
+        ).first()
 
         if user:
             session["user_id"] = user.id
             session["username"] = user.username
-            flash("Login successful!", "success")
             return redirect("/")
-        else:
-            flash("Invalid username or password", "danger")
+        flash("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "danger")
 
     return render_template("login.html")
-
-@app.route("/my-bouquet")
-def my_bouquet():
-    bouquet_ids = session.get("bouquet", [])
-
-    bouquet_flowers = [
-        flower for flower in flowers
-        if flower["id"] in bouquet_ids
-    ]
-
-    return render_template(
-        "my_bouquets.html",
-        bouquet_flowers=bouquet_flowers
-    )
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-
-        user = User(username=username, password=password)
-        db.session.add(user)
-        db.session.commit()
-
-        return redirect("/login")
-
-    return render_template("register.html")
-
-@app.route("/recommended")
-def recommended():
-    if "user_id" not in session:
-        return redirect("/login")
-
-    bouquets = [
-        {
-            "name": "Sweet Admiration",
-            "image": "images/sample/s1.png",
-            "description": "ช่อกล้วยไม้สีชมพูโดดเด่น แทนความชื่นชมและความรักที่อ่อนโยน\nล้อมรอบด้วยดอกยิปโซสีขาว ให้ความรู้สึกโรแมนติก น่าทะนุถนอม\nเป็นช่อดอกไม้ที่บอกความในใจได้โดยไม่ต้องใช้คำพูด\nเหมาะสำหรับคนพิเศษในช่วงเวลาพิเศษ"
-        },
-        {
-            "name": "Pure Grace",
-            "image": "images/sample/s2.png",
-            "description": "ช่อดอกไม้ที่ผสมผสานความบริสุทธิ์ของทิวลิปสีขาว\nเข้ากับความอ่อนหวานสง่างามของหน้าวัวสีชมพูอ่อน\nสื่อถึงความจริงใจความเคารพ และความรู้สึกดี ๆ ที่มอบให้จากใจ"
-        },
-        {
-            "name": "Blue Serenity",
-            "image": "images/sample/s3.png",
-            "description": "ช่อดอกไฮเดรนเยียสีฟ้าโทนสุภาพ ให้ความรู้สึกสงบ อ่อนโยน และจริงใจ\nสีฟ้าสื่อถึงความมั่นคง ความเข้าใจ และความสบายใจ เหมาะสำหรับมอบให้คนสำคัญ\nในวันที่อยากบอกว่า “ขอบคุณที่อยู่ข้างกันเสมอ”"
-        }
-    ]
-
-    return render_template("recommended.html", bouquets=bouquets)
 
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Logged out successfully", "info")
     return redirect("/")
 
-@app.route("/save_bouquet")
-def save_bouquet():
-    if "user_id" not in session:
-        flash("กรุณาเข้าสู่ระบบก่อนบันทึกช่อดอกไม้", "warning")
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        db.session.add(
+            User(
+                username=request.form["username"],
+                password=request.form["password"]
+            )
+        )
+        db.session.commit()
         return redirect("/login")
 
-    flower_ids = session.get("bouquet", [])
+    return render_template("register.html")
+
+# ------------------
+# Create Bouquet Flow
+# ------------------
+@app.route("/create-bouquet", methods=["GET", "POST"])
+def create_bouquet():
+    if not login_required():
+        return redirect("/login")
+
+    if request.method == "POST":
+        session["bouquet"] = {
+            "size": request.form["size"],
+            "flowers": {},
+            "style": "",
+            "theme": "",
+            "card": "-"
+        }
+        return redirect("/select-flowers")
+
+    return render_template("create_bouquet.html", sizes=BOUQUET_SIZE)
+
+@app.route("/select-flowers", methods=["GET", "POST"])
+def select_flowers():
+    if request.method == "POST":
+        selected = {}
+        for f in Flower.query.all():
+            qty = int(request.form.get(str(f.id), 0))
+            if qty > 0:
+                selected[str(f.id)] = qty
+        session["bouquet"]["flowers"] = selected
+        return redirect("/style")
+
+    return render_template("select_flowers.html", flowers=Flower.query.all())
+
+@app.route("/style", methods=["GET", "POST"])
+def style():
+    if request.method == "POST":
+        session["bouquet"]["style"] = request.form["style"]
+        session["bouquet"]["theme"] = request.form["theme"]
+        session["bouquet"]["card"] = request.form.get("card", "-")
+        return redirect("/summary")
+
+    return render_template("style.html")
+
+@app.route("/summary")
+def summary():
+    bouquet = session["bouquet"]
+    fee = BOUQUET_SIZE[bouquet["size"]]["fee"]
+
+    total = fee
+    flower_detail = []
+
+    for fid, qty in bouquet["flowers"].items():
+        flower = Flower.query.get(int(fid))
+        subtotal = flower.price * qty
+        total += subtotal
+        flower_detail.append((flower, qty, subtotal))
+
+    session["bouquet"]["total"] = total
+
+    return render_template(
+        "summary.html",
+        bouquet=bouquet,
+        flowers=flower_detail,
+        fee=fee,
+        total=total
+    )
+
+@app.route("/save-bouquet")
+def save_bouquet():
+    b = session["bouquet"]
 
     bouquet = Bouquet(
         user_id=session["user_id"],
-        flowers=",".join(map(str, flower_ids))
+        size=b["size"],
+        flowers=",".join([f"{k}:{v}" for k, v in b["flowers"].items()]),
+        style=b["style"],
+        theme=b["theme"],
+        card=b["card"],
+        total_price=b["total"]
     )
+
     db.session.add(bouquet)
     db.session.commit()
-
-    session.pop("bouquet", None)  # เคลียร์ช่อหลังบันทึก
-    flash("บันทึกช่อดอกไม้เรียบร้อย", "success")
+    session.pop("bouquet")
 
     return redirect("/history")
 
-@app.route("/remove/<int:flower_id>")
-def remove_flower(flower_id):
-    if "bouquet" in session:
-        session["bouquet"] = [
-            f for f in session["bouquet"] if f != flower_id
-        ]
-        session.modified = True
-
-    return redirect("/preview")
-
 @app.route("/history")
 def history():
-    if "user_id" not in session:
+    if not login_required():
         return redirect("/login")
 
     bouquets = Bouquet.query.filter_by(
         user_id=session["user_id"]
     ).order_by(Bouquet.created_at.desc()).all()
 
-    flower_map = {f.id: f.name for f in Flower.query.all()}
+    return render_template("history.html", bouquets=bouquets)
 
-    return render_template(
-        "history.html",
-        bouquets=bouquets,
-        flower_map=flower_map
-    )
-    
-@app.route("/final")
-def final():
-    return render_template("final.html")
-
+# ------------------
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-    
-    
-    
-    
-    

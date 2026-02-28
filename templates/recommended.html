@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">ช่อดอกไม้แนะนำสำหรับคุณ</h2>
+
+<div class="row">
+    {% for b in bouquets %}
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+
+            <div class="flower-box">
+                <img src="{{ url_for('static', filename=b.image) }}"
+                    class="flower-img">
+            </div>
+
+            <div class="card-body text-center">
+                <h5>{{ b.name }}</h5>
+                <p class="text-muted small">{{ b.description }}</p>
+
+                <a href="/flowers" class="btn btn-danger btn-sm">
+                    เลือกดอกไม้
+                </a>
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

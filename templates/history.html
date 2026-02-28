@@ -1,26 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="mb-4 text-center">ประวัติช่อดอกไม้</h2>
+<h2 class="mb-4 text-center">ประวัติการจัดช่อดอกไม้</h2>
 
 {% if bouquets %}
 <ul class="list-group">
     {% for bouquet in bouquets %}
-    <li class="list-group-item">
+    <li class="list-group-item mb-2">
+
         <strong>ช่อที่ {{ loop.index }}</strong><br>
 
-        วันที่:
-        {{ bouquet.created_at.strftime("%d/%m/%Y %H:%M") }}<br>
+        <span class="text-muted">
+            วันที่: {{ bouquet.created_at.strftime("%d/%m/%Y %H:%M") }}
+        </span>
+        <br><br>
 
-        ดอกไม้:
-        {% for fid in bouquet.flowers.split(",") %}
-            {{ flower_map[fid|int] }}{% if not loop.last %}, {% endif %}
-        {% endfor %}
+        <strong>ขนาดช่อ:</strong> {{ bouquet.size }} <br>
+        <strong>ธีม:</strong> {{ bouquet.theme or "-" }} <br>
+        <strong>การ์ด:</strong> {{ bouquet.card or "-" }} <br>
+
+        <hr>
+
+        <strong>ดอกไม้:</strong>
+        <ul>
+            {% for fid_qty in bouquet.flowers.split(",") %}
+                {% set fid = fid_qty.split(":")[0]|int %}
+                {% set qty = fid_qty.split(":")[1]|int %}
+                <li>{{ flower_map[fid] }} × {{ qty }}</li>
+            {% endfor %}
+        </ul>
+
+        <strong class="text-success">
+            ราคารวม: {{ bouquet.total_price }} บาท
+        </strong>
+
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p class="text-center text-muted">ยังไม่มีช่อดอกไม้ที่บันทึกไว้</p>
+<p class="text-center text-muted">
+    ยังไม่มีช่อดอกไม้ที่บันทึกไว้
+</p>
 {% endif %}
 
 {% endblock %}

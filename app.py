@@ -143,6 +143,17 @@ def remove_flower(flower_id):
 
     return redirect("/preview")
 
+@app.route("/history")
+def history():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    bouquets = Bouquet.query.filter_by(
+        user_id=session["user_id"]
+    ).order_by(Bouquet.created_at.desc()).all()
+
+    return render_template("history.html", bouquets=bouquets)
+
 @app.route("/final")
 def final():
     return render_template("final.html")

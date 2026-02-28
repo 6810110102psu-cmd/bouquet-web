@@ -14,6 +14,13 @@
     box-shadow: 0 14px 28px rgba(0,0,0,0.12);
 }
 
+.flower-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
 /* กล่องรูป */
 .flower-box {
     width: 100%;

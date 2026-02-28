@@ -1,15 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h2>เลือกดอกไม้ลงช่อ</h2>
 
-<form method="post">
-{% for f in flowers %}
-    <p>
-        {{ f.name }} ({{ f.price }} บาท/ดอก)
-        <input type="number" name="{{ f.id }}" value="0" min="0">
-    </p>
-{% endfor %}
+<form method="POST">
+    {% for flower in flowers %}
+    <div style="display:flex; align-items:center; margin-bottom:15px; gap:15px;">
 
-<button type="submit">ถัดไป</button>
+        <!-- รูปดอกไม้ -->
+        <img 
+            src="{{ url_for('static', filename=flower.image) }}" 
+            alt="{{ flower.name }}"
+            width="80"
+            style="border-radius:8px;"
+        >
+
+        <!-- ชื่อ + ราคา -->
+        <div style="width:260px;">
+            <strong>{{ flower.name }}</strong><br>
+            <small>{{ flower.price }} บาท/ดอก</small>
+        </div>
+
+        <!-- จำนวน -->
+        <input 
+            type="number" 
+            name="{{ flower.id }}" 
+            value="0" 
+            min="0"
+            style="width:70px;"
+        >
+    </div>
+    {% endfor %}
+
+    <button type="submit">ถัดไป</button>
 </form>
+
 {% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>เลือกขนาดช่อดอกไม้</h2>
+
+<form method="post">
+    <input type="radio" name="size" value="small" required> Small (200 บาท)<br>
+    <input type="radio" name="size" value="medium"> Medium (300 บาท)<br>
+    <input type="radio" name="size" value="large"> Large (500 บาท)<br><br>
+    <button type="submit" class="btn btn-primary">ถัดไป</button>
+</form>
+{% endblock %}

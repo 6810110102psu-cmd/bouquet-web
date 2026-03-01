@@ -252,12 +252,14 @@ def summary():
     
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
-    if not login_required(): return redirect("/login")
+    if not login_required(): 
+        return redirect("/login")
     
     bouquet_data = session.get("bouquet")
-    if not bouquet_data: return redirect("/flowers")
+    if not bouquet_data: 
+        return redirect("/flowers")
 
-    # คำนวณราคาสรุปอีกครั้งเพื่อแสดงผลในหน้าจ่ายเงิน
+    # 1. คำนวณราคาและเตรียมข้อมูลดอกไม้ (สำหรับโชว์ในหน้า Payment)
     flower_list = []
     total_price = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
     for f_id, qty in bouquet_data["flowers"].items():
@@ -267,7 +269,7 @@ def payment():
                 flower_list.append(f"{flower['name']} x {qty}")
                 total_price += flower["price"] * qty
 
-    # --- จังหวะที่ 1: ลูกค้ากดยืนยันการโอนเงิน (POST) ---
+    # 2. เมื่อกดยืนยันจากหน้า Payment (POST) -> ถึงจะบันทึกจริง
     if request.method == "POST":
         new_order = Bouquet(
             user_id=session["user_id"],
@@ -286,12 +288,11 @@ def payment():
         db.session.add(new_order)
         db.session.commit()
         
-        session.pop("bouquet", None) # ล้างตะกร้า
-        session["success_message"] = "ชำระเงินเรียบร้อยแล้ว! ขอบคุณที่ใช้บริการค่ะ"
-        return redirect("/history") # บันทึกเสร็จค่อยไปหน้าประวัติ
+        session.pop("bouquet", None) # ล้างข้อมูลในตะกร้า
+        session["success_message"] = "ชำระเงินเรียบร้อยแล้ว! ขอบคุณที่ใช้บริการค่ะ" # แจ้งเตือนจะเด้งตอนนี้
+        return redirect("/history") # บันทึกเสร็จค่อยเด้งไปหน้าประวัติ
 
-    # --- จังหวะที่ 2: ลูกค้าเพิ่งกดมาจากหน้า Summary (GET) ---
-    # ให้แสดงหน้า payment.html ที่มีรูป QR Code หรือเลขบัญชี
+    # 3. ถ้าเพิ่งกดมาจากหน้า Summary (GET) -> ให้โชว์หน้าจ่ายเงินที่มี QR Code
     return render_template("payment.html", total=total_price)
 
 @app.route("/history")

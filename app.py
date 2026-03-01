@@ -262,14 +262,18 @@ def payment():
 
         # ส่วนที่แก้ไข: ดึง name ออกมาให้ถูกต้อง
         new_order = Bouquet(
-            user_id=session["user_id"],
-            size=BOUQUET_SIZE[bouquet_data["size"]]["name"], # แก้ไขตรงนี้ให้ตรงกับ KeyError
-            flowers=", ".join(flower_list),
-            style=bouquet_data.get("style", "-"),
-            theme=bouquet_data.get("theme", "-"),
-            card=bouquet_data.get("card", "-"),
-            total_price=total_price
-        )
+                user_id=session["user_id"],
+                size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
+                flowers=", ".join(flower_list),
+                style=bouquet_data.get("style", "-"),
+                theme=bouquet_data.get("theme", "-"),
+                card=bouquet_data.get("card", "-"),
+                receive_date=bouquet_data.get("receive_date"), # เพิ่มส่วนนี้
+                receive_time=bouquet_data.get("receive_time"), # เพิ่มส่วนนี้
+                method=bouquet_data.get("method"),             # เพิ่มส่วนนี้
+                detail=bouquet_data.get("detail"),             # เพิ่มส่วนนี้
+                total_price=total_price
+            )
 
         db.session.add(new_order)
         db.session.commit()

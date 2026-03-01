@@ -230,15 +230,14 @@ def summary():
     bouquet = session.get("bouquet")
     if not bouquet: return redirect("/flowers")
 
-    # 1. ดึงค่าธรรมเนียมจัดช่อตามขนาด (Size Fee)
+    # ดึงค่าธรรมเนียมจัดช่อ (Base Fee)
     fee = BOUQUET_SIZE[bouquet["size"]]["fee"]
     total = fee
     flower_detail = []
 
-    # 2. คำนวณราคดอกไม้แต่ละชนิดที่เลือกมา
-    # bouquet["flowers"] จะเก็บเป็น { "IDดอกไม้": จำนวน }
+    # วนลูปหาดอกไม้เพื่อรวมราคา
     for fid, qty in bouquet.get("flowers", {}).items():
-        # ค้นหาข้อมูลดอกไม้จากรายการ FLOWERS หลัก
+        # ค้นหาข้อมูลดอกไม้จาก list FLOWERS หลัก
         flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
         if flower:
             subtotal = flower["price"] * qty
@@ -248,13 +247,13 @@ def summary():
                 "price": flower["price"],
                 "subtotal": subtotal
             })
-            total += subtotal # บวกราคดอกไม้เข้ากับยอดรวม
+            total += subtotal # บวกราคาดอกไม้เข้าไปในยอดรวม
 
     return render_template("summary.html", 
-                        bouquet=bouquet, 
-                        flower_detail=flower_detail, 
-                        fee=fee, 
-                        total=total)
+                            bouquet=bouquet, 
+                            flower_detail=flower_detail, 
+                            fee=fee, 
+                            total=total)
     
 @app.route("/payment", methods=["GET", "POST"])
 def payment():

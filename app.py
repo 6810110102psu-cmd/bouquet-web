@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import json
 
 app = Flask(__name__)
 app.secret_key = "bouquet-secret-key"
@@ -54,9 +55,9 @@ FLOWERS = [
 ]
 
 BOUQUET_SIZE = {
-    "small": {"fee": 200},
-    "medium": {"fee": 300},
-    "large": {"fee": 500},
+    "small": {"name": "ช่อเล็ก", "fee": 200, "min": 5, "max": 9},
+    "medium": {"name": "ช่อกลาง", "fee": 300, "min": 10, "max": 19},
+    "large": {"name": "ช่อใหญ่", "fee": 500, "min": 20, "max": 39},
 }
 
 # ------------------
@@ -139,37 +140,109 @@ def select_flowers():
 
 @app.route("/style", methods=["GET", "POST"])
 def style():
-    if not login_required():
-        return redirect("/login")
-
+    if not login_required(): return redirect("/login")
     if request.method == "POST":
-        session["bouquet"]["style"] = request.form["style"]
-        session["bouquet"]["theme"] = request.form["theme"]
-        session["bouquet"]["card"] = request.form.get("card", "-")
-        return redirect("/summary")
-
+        # เก็บข้อมูลสไตล์และธีมลง Session ให้ครบ
+        session["bouquet"]["style"] = request.form.get("style", "-")
+        session["bouquet"]["theme"] = request.form.get("theme", "-")
+        session["bouquet"]["card"] = request.form.get("card") if request.form.get("card") else "-"
+        session.modified = True # บังคับให้ Flask บันทึกการเปลี่ยนแปลงใน Session
+        return redirect("/delivery")
     return render_template("style.html")
+
+@app.route("/delivery", methods=["GET", "POST"])
+def delivery():
+    if not login_required(): return redirect("/login")
+    if request.method == "POST":
+        # เก็บข้อมูลการจัดส่งลงในก้อน bouquet
+        session["bouquet"]["fullname"] = request.form.get("fullname")
+        session["bouquet"]["phone"] = request.form.get("phone")
+        session["bouquet"]["method"] = request.form.get("method")
+        session["bouquet"]["detail"] = request.form.get("detail")
+        session.modified = True
+        return redirect("/summary")
+    return render_template("delivery.html")
 
 @app.route("/summary")
 def summary():
-    if not login_required():
-        return redirect("/login")
+    if "user_id" not in session: return redirect("/login")
+    bouquet = session.get("bouquet")
+    if not bouquet: return redirect("/flowers")
 
-    bouquet = session["bouquet"]
     fee = BOUQUET_SIZE[bouquet["size"]]["fee"]
-
     total = fee
-    detail = []
+    flower_detail = []
 
+    # วน Loop หาชื่อดอกไม้และคำนวณราคา
     for fid, qty in bouquet["flowers"].items():
-        flower = next(f for f in FLOWERS if f["id"] == int(fid))
-        subtotal = flower["price"] * qty
-        total += subtotal
-        detail.append((flower, qty, subtotal))
+        flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
+        if flower:
+            subtotal = flower["price"] * qty
+            flower_detail.append({
+                "name": flower.get("name"),
+                "qty": qty,
+                "price": flower.get("price"),
+                "subtotal": subtotal
+            })
+            total += subtotal
 
-    bouquet["total"] = total
+    return render_template("summary.html", 
+                            bouquet=bouquet, 
+                            flower_detail=flower_detail, 
+                            fee=fee, 
+                            total=total)
+    
+@app.route("/payment", methods=["GET", "POST"])
+def payment():
+    if not login_required(): return redirect("/login")
+    
+    bouquet_data = session.get("bouquet")
+    if not bouquet_data: return redirect("/flowers")
 
-    return render_template("summary.html", bouquet=bouquet, flowers=detail, fee=fee, total=total)
+    if request.method == "POST":
+        fee = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
+        total_price = fee
+        flower_list = []
+        
+        for fid, qty in bouquet_data["flowers"].items():
+            flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
+            if flower:
+                total_price += flower["price"] * qty
+                flower_list.append(f"{flower['name']} x {qty}")
+
+        # ส่วนที่แก้ไข: ดึง name ออกมาให้ถูกต้อง
+        new_order = Bouquet(
+            user_id=session["user_id"],
+            size=BOUQUET_SIZE[bouquet_data["size"]]["name"], # แก้ไขตรงนี้ให้ตรงกับ KeyError
+            flowers=", ".join(flower_list),
+            style=bouquet_data.get("style", "-"),
+            theme=bouquet_data.get("theme", "-"),
+            card=bouquet_data.get("card", "-"),
+            total_price=total_price
+        )
+
+        db.session.add(new_order)
+        db.session.commit()
+
+        session.pop("bouquet", None) # ล้างค่าตะกร้าออก
+        flash("การสั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการค่ะ", "success")
+        
+        # เด้งกลับไปหน้าแรก (index) ตามต้องการ
+        return redirect("/") 
+
+    return render_template("payment.html")
+
+@app.route("/customize", methods=["POST"])
+def customize():
+    bouquet = session.get("bouquet", {})
+
+    bouquet["style"] = request.form.get("style", "")
+    bouquet["theme"] = request.form.get("theme", "")
+    bouquet["card"] = request.form.get("card", "")
+
+    session["bouquet"] = bouquet
+
+    return redirect("/summary")
 
 @app.route("/history")
 def history():

@@ -1,28 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>สรุปรายการสั่งซื้อ</h2>
+<div class="card shadow p-4">
+    <h2 class="mb-4 text-center">สรุปรายการจัดช่อดอกไม้</h2>
 
-<h3>ดอกไม้ที่เลือก</h3>
-<ul>
-{% for name, f in bouquet.flowers.items() %}
-  <li>{{ name }} x {{ f.qty }} ดอก = {{ f.qty * f.price }} บาท</li>
-{% endfor %}
-</ul>
+    <h5 class="text-primary">ดอกไม้ที่เลือก</h5>
+    <ul class="list-group mb-3">
+        {% for item in flower_detail %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ item.name }} x {{ item.qty }}
+            <span>{{ item.subtotal }} บาท</span>
+        </li>
+        {% endfor %}
+        <li class="list-group-item d-flex justify-content-between">
+            <strong>ค่าจัดช่อ ({{ bouquet.size }})</strong>
+            <strong>{{ fee }} บาท</strong>
+        </li>
+    </ul>
 
-<p>ค่าจัดช่อ: {{ fee }} บาท</p>
+    <hr>
+    <h5 class="text-primary">รายละเอียดการจัดช่อ</h5>
+    <p><strong>สไตล์:</strong> {{ bouquet.style }}</p>
+    <p><strong>ธีม/สีกระดาษ:</strong> {{ bouquet.theme }}</p>
+    <p><strong>ข้อความการ์ด:</strong> {{ bouquet.card }}</p>
 
-<h3>รายละเอียดการจัดช่อ</h3>
-<p>ขนาดช่อ: {{ bouquet.size }}</p>
-<p>สไตล์: {{ bouquet.style }}</p>
-<p>ธีม: {{ bouquet.theme }}</p>
-<p>ข้อความการ์ด: {{ bouquet.card }}</p>
+    <hr>
+    <h5 class="text-primary">ข้อมูลการจัดส่ง</h5>
+    <p><strong>ชื่อผู้รับ:</strong> {{ bouquet.fullname }}</p>
+    <p><strong>เบอร์โทร:</strong> {{ bouquet.phone }}</p>
+    <p><strong>วิธีรับ:</strong> {{ bouquet.method }}</p>
+    <p><strong>รายละเอียด/ที่อยู่:</strong> {{ bouquet.detail }}</p>
 
-<h3>ข้อมูลลูกค้า</h3>
-{% for k, v in bouquet.customer.items() %}
-<p>{{ k }} : {{ v }}</p>
-{% endfor %}
-
-<h2>ราคารวมทั้งหมด: {{ bouquet.total }} บาท</h2>
-
-<a href="/payment">ยืนยันและไปชำระเงิน</a>
+    <hr>
+    <div class="text-center">
+        <h3 class="text-danger">ราคารวมทั้งหมด: {{ total }} บาท</h3>
+        <a href="/payment" class="btn btn-danger btn-lg mt-3 w-100">ยืนยันและไปชำระเงิน</a>
+    </div>
+</div>
 {% endblock %}

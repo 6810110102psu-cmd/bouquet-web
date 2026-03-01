@@ -2,41 +2,129 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>Bouquet Web</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouquet Web | ร้านจัดช่อดอกไม้ออนไลน์</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/flowers.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ปรับแต่ง Navbar ให้ดูละมุนขึ้น */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #fff5f5;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #ff5e78 !important;
+            font-size: 1.5rem;
+        }
+        .nav-link-custom {
+            color: #4a4a4a !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+        .nav-link-custom:hover {
+            background-color: #fff5f5;
+            color: #ff5e78 !important;
+        }
+        .btn-nav-action {
+            background-color: #ff5e78;
+            color: white !important;
+            border-radius: 20px;
+            padding: 8px 20px !important;
+            font-weight: 600;
+        }
+        /* เอฟเฟกต์ Fade In สำหรับ Content */
+        .page-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
 
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-    <a class="navbar-brand" href="/">Bouquet</a>
+<nav class="navbar navbar-expand-lg sticky-top px-4 py-3 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-flower1 me-1"></i> Bouquet
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="ms-auto d-flex gap-2">
-        {% if session.get("user_id") %}
-            <!-- Login แล้ว -->
-            <a href="/flowers" class="btn btn-outline-light">Flowers</a>
-            <a href="/create-bouquet" class="btn btn-outline-light">Create Bouquet</a>
-            <a href="/history" class="btn btn-outline-light">History</a>
-            <a href="/logout" class="btn btn-outline-light">Logout</a>
-        {% else %}
-            <!-- Guest -->
-            <a href="/flowers" class="btn btn-outline-light">Flowers</a>
-            <a href="/login" class="btn btn-outline-light">Login</a>
-        {% endif %}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex flex-column flex-lg-row align-items-center gap-2">
+                <a href="/flowers" class="nav-link-custom nav-link">
+                    <i class="bi bi-images me-1"></i> แกลเลอรี
+                </a>
+                
+                {% if session.get("user_id") %}
+                    <a href="/create-bouquet" class="nav-link-custom nav-link">
+                        <i class="bi bi-plus-circle me-1"></i> จัดช่อดอกไม้
+                    </a>
+                    <a href="/history" class="nav-link-custom nav-link">
+                        <i class="bi bi-clock-history me-1"></i> ประวัติสั่งซื้อ
+                    </a>
+                    <a href="/logout" class="btn btn-nav-action ms-lg-2">
+                        ออกจากระบบ <i class="bi bi-box-arrow-right ms-1"></i>
+                    </a>
+                {% else %}
+                    <a href="/login" class="btn btn-nav-action ms-lg-2">
+                        เข้าสู่ระบบ <i class="bi bi-person-circle ms-1"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container mt-4 page-content">
     {% block content %}{% endblock %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // ตั้งค่า Toast ของ SweetAlert2 ให้ดูทันสมัย
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+
+    // แจ้งเตือนเมื่อสำเร็จ
+    {% if session.get("success_message") %}
+        Toast.fire({
+            icon: 'success',
+            title: '{{ session.pop("success_message") }}'
+        });
+    {% endif %}
+
+    // แจ้งเตือนเมื่อมีข้อผิดพลาด (ถ้าคุณเพิ่ม Error Message ใน Session)
+    {% if session.get("error_message") %}
+        Swal.fire({
+            icon: 'error',
+            title: 'อุ๊ปส์...',
+            text: '{{ session.pop("error_message") }}',
+            confirmButtonColor: '#ff5e78'
+        });
+    {% endif %}
+</script>
 
 </body>
 </html>

@@ -293,7 +293,7 @@ def payment():
         session.pop("bouquet", None)
         return redirect("/history") # สั่งเสร็จส่งไปหน้าประวัติเลยคั้บ
 
-    return render_template("payment.html", total=total_price)
+    return render_template("payment.html", total=total_price)                                                                       *0
 
 @app.route("/history")
 def history():

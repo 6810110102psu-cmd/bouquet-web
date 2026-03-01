@@ -246,10 +246,12 @@ def customize():
 
 @app.route("/history")
 def history():
-    if not login_required():
+    if not login_required(): 
         return redirect("/login")
 
-    bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).all()
+    # ดึงรายการสั่งซื้อทั้งหมดของ User นั้นๆ เรียงจากใหม่ไปเก่า
+    bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).order_by(Bouquet.created_at.desc()).all()
+    
     return render_template("history.html", bouquets=bouquets)
 
 # ------------------

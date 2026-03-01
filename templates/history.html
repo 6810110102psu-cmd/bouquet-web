@@ -3,44 +3,37 @@
 
 <h2 class="mb-4 text-center">ประวัติการจัดช่อดอกไม้</h2>
 
-{% if bouquets %}
-<ul class="list-group">
-    {% for bouquet in bouquets %}
-    <li class="list-group-item mb-2">
-
-        <strong>ช่อที่ {{ loop.index }}</strong><br>
-
-        <span class="text-muted">
-            วันที่: {{ bouquet.created_at.strftime("%d/%m/%Y %H:%M") }}
-        </span>
-        <br><br>
-
-        <strong>ขนาดช่อ:</strong> {{ bouquet.size }} <br>
-        <strong>ธีม:</strong> {{ bouquet.theme or "-" }} <br>
-        <strong>การ์ด:</strong> {{ bouquet.card or "-" }} <br>
-
-        <hr>
-
-        <strong>ดอกไม้:</strong>
-        <ul>
-            {% for fid_qty in bouquet.flowers.split(",") %}
-                {% set fid = fid_qty.split(":")[0]|int %}
-                {% set qty = fid_qty.split(":")[1]|int %}
-                <li>{{ flower_map[fid] }} × {{ qty }}</li>
-            {% endfor %}
-        </ul>
-
-        <strong class="text-success">
-            ราคารวม: {{ bouquet.total_price }} บาท
-        </strong>
-
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p class="text-center text-muted">
-    ยังไม่มีช่อดอกไม้ที่บันทึกไว้
-</p>
-{% endif %}
+<div class="card shadow p-4">
+    {% if bouquets %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>วันที่สั่งซื้อ</th>
+                        <th>ขนาด</th>
+                        <th>รายละเอียดดอกไม้</th>
+                        <th>ราคารวม</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bouquet in bouquets %}
+                    <tr>
+                        <td>{{ bouquet.created_at.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td>{{ bouquet.size }}</td>
+                        <td>{{ bouquet.flowers }}</td>
+                        <td class="text-success fw-bold">{{ bouquet.total_price }} บาท</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <h4 class="text-muted">คุณยังไม่มีประวัติการสั่งซื้อในขณะนี้</h4>
+            <p>เริ่มต้นสร้างช่อดอกไม้สวยๆ ในแบบของคุณได้เลย!</p>
+            <a href="/create-bouquet" class="btn btn-danger mt-2">เริ่มจัดช่อดอกไม้</a>
+        </div>
+    {% endif %}
+</div>
 
 {% endblock %}

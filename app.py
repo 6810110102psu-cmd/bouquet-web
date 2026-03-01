@@ -33,14 +33,21 @@ class User(db.Model):
 
 class Bouquet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    size = db.Column(db.String(20))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    size = db.Column(db.String(50))
     flowers = db.Column(db.Text)
     style = db.Column(db.String(100))
     theme = db.Column(db.String(50))
-    card = db.Column(db.String(200))
-    total_price = db.Column(db.Integer)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    card = db.Column(db.Text)
+    total_price = db.Column(db.Float)
+    
+    receive_date = db.Column(db.String(50))
+    receive_time = db.Column(db.String(50))
+    method = db.Column(db.String(50))
+    detail = db.Column(db.Text)
+    # -----------------------------------
+    
+    created_at = db.Column(db.DateTime, default=get_bangkok_time)
 
 # ------------------
 # Static Flower Data
@@ -223,28 +230,31 @@ def summary():
     bouquet = session.get("bouquet")
     if not bouquet: return redirect("/flowers")
 
+    # 1. ดึงค่าธรรมเนียมจัดช่อตามขนาด (Size Fee)
     fee = BOUQUET_SIZE[bouquet["size"]]["fee"]
     total = fee
     flower_detail = []
 
-    # วน Loop หาชื่อดอกไม้และคำนวณราคา
-    for fid, qty in bouquet["flowers"].items():
+    # 2. คำนวณราคดอกไม้แต่ละชนิดที่เลือกมา
+    # bouquet["flowers"] จะเก็บเป็น { "IDดอกไม้": จำนวน }
+    for fid, qty in bouquet.get("flowers", {}).items():
+        # ค้นหาข้อมูลดอกไม้จากรายการ FLOWERS หลัก
         flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
         if flower:
             subtotal = flower["price"] * qty
             flower_detail.append({
-                "name": flower.get("name"),
+                "name": flower["name"],
                 "qty": qty,
-                "price": flower.get("price"),
+                "price": flower["price"],
                 "subtotal": subtotal
             })
-            total += subtotal
+            total += subtotal # บวกราคดอกไม้เข้ากับยอดรวม
 
     return render_template("summary.html", 
-                            bouquet=bouquet, 
-                            flower_detail=flower_detail, 
-                            fee=fee, 
-                            total=total)
+                        bouquet=bouquet, 
+                        flower_detail=flower_detail, 
+                        fee=fee, 
+                        total=total)
     
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
@@ -273,14 +283,13 @@ def payment():
             style=bouquet_data.get("style", "-"),
             theme=bouquet_data.get("theme", "-"),
             card=bouquet_data.get("card", "-"),
-            
-            # --- ส่วนที่เพิ่มใหม่เพื่อให้หน้า History แสดงผลได้ ---
-            receive_date=bouquet_data.get("receive_date"), # วันที่รับ
-            receive_time=bouquet_data.get("receive_time"), # เวลารับ
-            method=bouquet_data.get("method"),             # วิธีรับสินค้า
-            detail=bouquet_data.get("detail", "-"),        # ที่อยู่/เพิ่มเติม
-            # ----------------------------------------------
-            
+    
+        # ดึงค่าจาก session มาบันทึก
+            receive_date=bouquet_data.get("receive_date"),
+            receive_time=bouquet_data.get("receive_time"),
+            method=bouquet_data.get("method"),
+            detail=bouquet_data.get("detail", "-"),
+    
             total_price=total_price
         )
 

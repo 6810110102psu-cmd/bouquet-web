@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
 import re
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 app.secret_key = "bouquet-secret-key"
@@ -14,10 +16,16 @@ db = SQLAlchemy(app)
 # ------------------
 # Models
 # ------------------
+
+# สร้างฟังก์ชันสำหรับดึงเวลาปัจจุบันของไทย
+def get_bangkok_time():
+    return datetime.now(pytz.timezone('Asia/Bangkok'))
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=get_bangkok_time)
 
 class Bouquet(db.Model):
     id = db.Column(db.Integer, primary_key=True)

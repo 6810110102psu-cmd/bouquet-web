@@ -253,23 +253,33 @@ def summary():
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
     if not login_required(): return redirect("/login")
+    
     bouquet_data = session.get("bouquet")
     if not bouquet_data: return redirect("/flowers")
 
+    # --- ส่วนที่ต้องเพิ่ม: สร้างรายการดอกไม้เพื่อบันทึกลงฐานข้อมูล ---
+    flower_list = []
+    total_price = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
+    
+    # วนลูปเช็กดอกไม้ที่เลือกจาก session
+    for f_id, qty in bouquet_data["flowers"].items():
+        if qty > 0:
+            flower = next((f for f in FLOWERS if f["id"] == int(f_id)), None)
+            if flower:
+                flower_list.append(f"{flower['name']} x {qty}")
+                total_price += flower["price"] * qty
+    # -------------------------------------------------------
+
     if request.method == "POST":
-        # (ส่วนคำนวณราคาคงเดิม...)
-        
+        # สร้าง Order ใหม่เพื่อบันทึกลง DB
         new_order = Bouquet(
             user_id=session["user_id"],
             size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
-            flowers=", ".join(flower_list),
+            flowers=", ".join(flower_list), # ตอนนี้มีตัวแปร flower_list แล้ว ไม่ Error แล้วคั้บ
             style=bouquet_data.get("style", "-"),
             theme=bouquet_data.get("theme", "-"),
             card=bouquet_data.get("card", "-"),
-            
-            # ดึงค่า occasion จาก session มาบันทึก
-            occasion=bouquet_data.get("occasion", "-"), 
-            
+            occasion=bouquet_data.get("occasion", "-"), # บันทึกเนื่องในโอกาส
             receive_date=bouquet_data.get("receive_date"),
             receive_time=bouquet_data.get("receive_time"),
             method=bouquet_data.get("method"),
@@ -278,11 +288,12 @@ def payment():
         )
         db.session.add(new_order)
         db.session.commit()
-        # (ส่วนเคลียร์ session คงเดิม...)
-        session.pop("bouquet", None) 
-        flash("การสั่งซื้อสำเร็จ!", "success")
-        return redirect("/")
-    return render_template("payment.html")
+        
+        # เคลียร์ session หลังจากสั่งซื้อเสร็จ
+        session.pop("bouquet", None)
+        return redirect("/history") # สั่งเสร็จส่งไปหน้าประวัติเลยคั้บ
+
+    return render_template("payment.html", total=total_price)
 
 @app.route("/history")
 def history():

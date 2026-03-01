@@ -1,70 +1,121 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container mt-4">
-    <h2 class="mb-4 text-center">ประวัติการสั่งซื้อของคุณ</h2>
-    
-    <div class="card shadow border-0 p-4" style="border-radius: 20px;">
-        {% if bouquets %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>วันที่สั่งซื้อ (ไทย)</th>
-                            <th>รายการ</th>
-                            <th>ราคารวม</th>
-                            <th>การจัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for bouquet in bouquets %}
-                        <tr>
-                            <td>{{ bouquet.created_at.strftime('%d/%m/%Y %H:%M') }} น.</td>
-                            <td>{{ bouquet.size }} - {{ bouquet.flowers[:30] }}...</td>
-                            <td class="text-success fw-bold">{{ "{:,.2f}".format(bouquet.total_price) }} บาท</td>
-                            <td>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ bouquet.id }}">
-                                    ดูรายละเอียดทั้งหมด
-                                </button>
-                            </td>
-                        </tr>
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-5 fw-bold" style="color: #4a4a4a; letter-spacing: 1px;">
+        <i class="bi bi-journal-text me-2 text-danger"></i> ประวัติคำสั่งซื้อจัดช่อดอกไม้
+    </h2>
 
-                        <div class="modal fade" id="modal{{ bouquet.id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content" style="border-radius: 15px;">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">รายละเอียดคำสั่งซื้อ #{{ bouquet.id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    {% if history_data %}
+        <div class="row justify-content-center">
+            {% for item in history_data %}
+            {% set bouquet = item.order %}
+            <div class="col-md-10 col-lg-9 mb-5">
+                <div class="card border-0 shadow-sm" style="border-radius: 30px; overflow: hidden; background: #ffffff;">
+                    
+                    <div class="card-header border-0 py-4 px-4 d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);">
+                        <div>
+                            <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2">
+                                <strong>Order ID: #{{ bouquet.id }}</strong>
+                            </span>
+                            <span class="text-muted ms-3 small">
+                                <i class="bi bi-clock me-1"></i> {{ bouquet.created_at.strftime('%d/%m/%Y %H:%M') }} น.
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">ยอดชำระสุทธิ</span>
+                            <h3 class="text-success fw-bold mb-0">{{ "{:,.2f}".format(bouquet.total_price) }} ฿</h3>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-5 border-end">
+                                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-flower1 me-2 text-danger"></i>รายการดอกไม้ในช่อ</h6>
+                                <div class="d-flex flex-wrap gap-3 p-3 rounded-4" style="background-color: #fafafa; min-height: 140px; border: 1px solid #f0f0f0;">
+                                    {% for flower in item.flower_items %}
+                                    <div class="text-center position-relative" style="width: 75px;">
+                                        <div class="img-container mb-1">
+                                            <img src="{{ url_for('static', filename=flower.image) }}" 
+                                                    class="img-fluid rounded-circle border shadow-sm" 
+                                                    style="width: 65px; height: 65px; object-fit: cover; background: white; border: 3px solid #fff !important;">
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
+                                                {{ flower.qty }}
+                                            </span>
+                                        </div>
+                                        <div style="font-size: 0.7rem; color: #555;" class="text-truncate fw-medium">{{ flower.name }}</div>
                                     </div>
-                                    <div class="modal-body">
-                                        <p><strong>ขนาดช่อ:</strong> {{ bouquet.size }}</p>
-                                        <p><strong>ดอกไม้:</strong> {{ bouquet.flowers }}</p>
-                                        <hr>
-                                        <p><strong>สไตล์/กระดาษห่อ:</strong> {{ bouquet.style }}</p>
-                                        <p><strong>โทนสี (Theme):</strong> {{ bouquet.theme }}</p>
-                                        <p><strong>ข้อความบนการ์ด:</strong> {{ bouquet.card }}</p>
-                                        <hr>
-                                        <p class="text-primary"><strong>นัดรับวันที่:</strong> {{ bouquet.receive_date }}</p>
-                                        <p class="text-primary"><strong>เวลานัดรับ:</strong> {{ bouquet.receive_time }} น.</p>
-                                        <p><strong>วิธีรับสินค้า:</strong> {{ bouquet.method }}</p>
-                                        <p><strong>ที่อยู่จัดส่ง/เพิ่มเติม:</strong> {{ bouquet.detail }}</p>
-                                        <hr>
-                                        <h4 class="text-end text-success">ยอดชำระ: {{ "{:,.2f}".format(bouquet.total_price) }} บาท</h4>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-7 ps-md-4">
+                                <div class="row mt-3 mt-md-0">
+                                    <div class="col-6">
+                                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-palette me-2"></i>สไตล์ที่เลือก</h6>
+                                        <ul class="list-unstyled small mb-0">
+                                            <li class="mb-1"><strong>ขนาด:</strong> {{ bouquet.size }}</li>
+                                            <li class="mb-1"><strong>สไตล์:</strong> {{ bouquet.style }}</li>
+                                            <li class="mb-1"><strong>ธีมสี:</strong> {{ bouquet.theme }}</li>
+                                        </ul>
                                     </div>
+                                    <div class="col-6">
+                                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-truck me-2"></i>ข้อมูลนัดรับ</h6>
+                                        <ul class="list-unstyled small mb-0">
+                                            <li class="mb-1 text-primary"><strong>วันที่:</strong> {{ bouquet.receive_date }}</li>
+                                            <li class="mb-1"><strong>เวลา:</strong> {{ bouquet.receive_time }} น.</li>
+                                            <li class="mb-1"><strong>วิธีรับ:</strong> {{ bouquet.method }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="p-3 rounded-3" style="background-color: #fff9f9; border-left: 4px solid #ffc1c1;">
+                                        <p class="small mb-0 text-dark">
+                                            <i class="bi bi-chat-heart me-2 text-danger"></i>
+                                            <strong>ข้อความบนการ์ด:</strong> 
+                                            <span class="fst-italic">"{{ bouquet.card }}"</span>
+                                        </p>
+                                    </div>
+                                    <p class="small mt-3 mb-0 text-muted">
+                                        <i class="bi bi-geo-alt-fill me-1"></i> <strong>ที่อยู่/หมายเหตุ:</strong> {{ bouquet.detail }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                    
+                    <div class="card-footer bg-light border-0 py-3 px-4 d-flex justify-content-end">
+                        <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i> คำสั่งซื้อเสร็จสมบูรณ์</span>
+                    </div>
+                </div>
             </div>
-        {% else %}
-            <div class="text-center py-5">
-                <p class="text-muted">ยังไม่มีประวัติการสั่งซื้อ</p>
-                <a href="/create-bouquet" class="btn btn-danger">เริ่มจัดช่อดอกไม้เลย</a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="card border-0 shadow mx-auto p-5" style="max-width: 500px; border-radius: 40px; background: #ffffff;">
+                <div class="display-1 text-muted opacity-25 mb-4">
+                    <i class="bi bi-bag-x"></i>
+                </div>
+                <h4 class="fw-bold text-dark">ยังไม่มีประวัติคำสั่งซื้อ</h4>
+                <p class="text-muted mb-4 px-4">ดูเหมือนคุณยังไม่ได้เริ่มสร้างความประทับใจผ่านช่อดอกไม้เลยนะ เริ่มต้นตอนนี้เลย!</p>
+                <a href="/create-bouquet" class="btn btn-danger btn-lg rounded-pill px-5 shadow-sm py-3 fw-bold">
+                    <i class="bi bi-plus-lg me-2"></i> เริ่มจัดช่อดอกไม้
+                </a>
             </div>
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 </div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    body { background-color: #f8f9fa; }
+    .card { transition: all 0.3s ease; }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+    .img-container:hover img { transform: scale(1.1); transition: 0.3s ease; }
+    .badge.bg-danger { font-size: 0.75rem; padding: 0.4em 0.6em; }
+</style>
 
 {% endblock %}

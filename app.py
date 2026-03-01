@@ -285,9 +285,32 @@ def payment():
 @app.route("/history")
 def history():
     if not login_required(): return redirect("/login")
-
+    
     bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).order_by(Bouquet.created_at.desc()).all()
-    return render_template("history.html", bouquets=bouquets)
+    
+    history_data = []
+    for b in bouquets:
+        flower_items = []
+        # แยกข้อความดอกไม้ เช่น "White Rose x 2, Lily x 1"
+        if b.flowers:
+            parts = b.flowers.split(", ")
+            for p in parts:
+                if " x " in p:
+                    name, qty = p.split(" x ")
+                    # ค้นหารูปภาพจากลิสต์ FLOWERS หลัก
+                    flower_info = next((f for f in FLOWERS if f["name"] == name.strip()), None)
+                    flower_items.append({
+                        "name": name.strip(),
+                        "qty": qty.strip(),
+                        "image": flower_info["image"] if flower_info else "images/flowers/default.png"
+                    })
+        
+        history_data.append({
+            "order": b,
+            "flower_items": flower_items
+        })
+    
+    return render_template("history.html", history_data=history_data)
 
 # ------------------
 if __name__ == "__main__":

@@ -1,11 +1,145 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>เลือกขนาดช่อดอกไม้</h2>
 
-<form method="post">
-    <input type="radio" name="size" value="small" required> Small (200 บาท)<br>
-    <input type="radio" name="size" value="medium"> Medium (300 บาท)<br>
-    <input type="radio" name="size" value="large"> Large (500 บาท)<br><br>
-    <button type="submit" class="btn btn-primary">ถัดไป</button>
-</form>
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-5 fw-bold" style="color: #4a4a4a; letter-spacing: 1px;">
+        <i class="bi bi-flower1 text-danger me-2"></i> เลือกขนาดช่อดอกไม้
+    </h2>
+
+    <form action="/create-bouquet" method="POST" id="createBouquetForm">
+        <div class="row row-cols-1 row-cols-md-3 g-4 bouquet-size-container">
+            
+            <div class="col">
+                <input type="radio" name="size" id="size-small" value="small" class="btn-check" required>
+                <label for="size-small" class="card bouquet-size-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center d-flex flex-column">
+                        <div class="img-wrapper mb-4">
+                            <img src="{{ url_for('static', filename='images/bouquet_sizes/small.png') }}" 
+                                    class="img-fluid rounded-4 shadow-sm border p-2 bg-white" 
+                                    style="width: 160px; height: 160px; object-fit: contain;">
+                            <div class="mt-2 small text-muted">* ตัวอย่างขนาดจริง *</div>
+                        </div>
+                        
+                        <h4 class="fw-bold mb-1">ช่อเล็ก</h4>
+                        <p class="text-danger fw-bold mb-3">(5–9 ดอก) | 200 ฿</p>
+                        
+                        <div class="text-start mb-4 flex-grow-1">
+                            <p class="small mb-2"><strong>ขนาด:</strong> กว้าง 20–25 ซม. | สูง 30–35 ซม.</p>
+                            <p class="small text-muted mb-3 italic">"ช่อกะทัดรัด น่ารัก ดูอบอุ่น เหมาะกับการให้แบบเป็นกันเอง"</p>
+                            <div class="bg-light p-2 rounded-3">
+                                <p class="small fw-bold mb-1">เหมาะสำหรับ:</p>
+                                <ul class="small mb-0 ps-3">
+                                    <li>วันเกิดเพื่อน / คนสนิท</li>
+                                    <li>แสดงความขอบคุณ / เยี่ยมไข้</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="col">
+                <input type="radio" name="size" id="size-medium" value="medium" class="btn-check" required>
+                <label for="size-medium" class="card bouquet-size-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center d-flex flex-column">
+                        <div class="img-wrapper mb-4">
+                            <img src="{{ url_for('static', filename='images/bouquet_sizes/medium.png') }}" 
+                                    class="img-fluid rounded-4 shadow-sm border p-2 bg-white" 
+                                    style="width: 160px; height: 160px; object-fit: contain;">
+                            <div class="mt-2 small text-muted">* ตัวอย่างขนาดจริง *</div>
+                        </div>
+                        
+                        <h4 class="fw-bold mb-1">ช่อกลาง</h4>
+                        <p class="text-danger fw-bold mb-3">(10–19 ดอก) | 300 ฿</p>
+                        
+                        <div class="text-start mb-4 flex-grow-1">
+                            <p class="small mb-2"><strong>ขนาด:</strong> กว้าง 30–35 ซม. | สูง 40–45 ซม.</p>
+                            <p class="small text-muted mb-3 italic">"ขนาดยอดนิยม จัดทรงสวย โดดเด่นและสมดุล ให้ความรู้สึกจริงใจ"</p>
+                            <div class="bg-light p-2 rounded-3">
+                                <p class="small fw-bold mb-1">เหมาะสำหรับ:</p>
+                                <ul class="small mb-0 ps-3">
+                                    <li>วันเกิดแฟน / คนพิเศษ</li>
+                                    <li>วันครบรอบ / แสดงความยินดี</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="col">
+                <input type="radio" name="size" id="size-large" value="large" class="btn-check" required>
+                <label for="size-large" class="card bouquet-size-card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4 text-center d-flex flex-column">
+                        <div class="img-wrapper mb-4">
+                            <img src="{{ url_for('static', filename='images/bouquet_sizes/large.png') }}" 
+                                    class="img-fluid rounded-4 shadow-sm border p-2 bg-white" 
+                                    style="width: 160px; height: 160px; object-fit: contain;">
+                            <div class="mt-2 small text-muted">* ตัวอย่างขนาดจริง *</div>
+                        </div>
+                        
+                        <h4 class="fw-bold mb-1">ช่อใหญ่</h4>
+                        <p class="text-danger fw-bold mb-3">(20–39 ดอก) | 500 ฿</p>
+                        
+                        <div class="text-start mb-4 flex-grow-1">
+                            <p class="small mb-2"><strong>ขนาด:</strong> กว้าง 40–50 ซม. | สูง 50–60 ซม.</p>
+                            <p class="small text-muted mb-3 italic">"สวยอลังการ สะดุดตา สร้างความประทับใจตั้งแต่แรกเห็น"</p>
+                            <div class="bg-light p-2 rounded-3">
+                                <p class="small fw-bold mb-1">เหมาะสำหรับ:</p>
+                                <ul class="small mb-0 ps-3">
+                                    <li>ขอแต่งงาน / วันครบรอบพิเศษ</li>
+                                    <li>รับปริญญา / เปิดร้านใหม่</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+        </div>
+
+        <div class="row mt-5 justify-content-center">
+            <div class="col-md-10">
+                <div class="p-4 rounded-4 shadow-sm bg-white border-start border-danger border-5">
+                    <h6 class="fw-bold mb-2"><i class="bi bi-info-circle-fill text-danger me-2"></i>หมายเหตุ</h6>
+                    <ul class="small mb-0 text-muted">
+                        <li>ขนาดและจำนวนดอกไม้เป็นค่าประมาณการเบื้องต้น</li>
+                        <li>อาจมีการปรับเล็กน้อยตามชนิดดอกไม้และการจัดทรง เพื่อความสวยงามและสมดุลที่สุด</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .bouquet-size-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 30px !important;
+        border: 2px solid transparent !important;
+    }
+    .bouquet-size-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+    }
+    .btn-check:checked + .bouquet-size-card {
+        border-color: #ff5e78 !important;
+        background-color: #fff9f9;
+        box-shadow: 0 15px 30px rgba(255, 94, 120, 0.2) !important;
+    }
+    .italic { font-style: italic; font-size: 0.85rem; }
+    .rounded-4 { border-radius: 1.25rem !important; }
+</style>
+
+<script>
+    document.querySelectorAll('.btn-check').forEach(radio => {
+        radio.addEventListener('change', () => {
+            setTimeout(() => {
+                document.getElementById('createBouquetForm').submit();
+            }, 300); // หน่วงเวลาเล็กน้อยเพื่อให้ลูกค้าเห็นว่าเลือกอันไหนแล้ว
+        });
+    });
+</script>
+
 {% endblock %}

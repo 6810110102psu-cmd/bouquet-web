@@ -1,33 +1,40 @@
 /* ===== Global ===== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    /* เปลี่ยนเป็นฟอนต์ Mali และเพิ่ม cursive เป็นฟอนต์สำรอง */
+    font-family: 'Mali', cursive !important; 
+    background-color: #fefefe; /* เปลี่ยนเป็นขาวนวลให้ดูละมุนขึ้น */
     margin: 0;
+    color: #4a4a4a;
 }
 
-h1, h2, h3, h5 {
+/* บังคับใช้ฟอนต์ Mali กับหัวข้อทั้งหมด */
+h1, h2, h3, h4, h5, h6, .navbar-brand, button, input, select, textarea {
+    font-family: 'Mali', cursive !important;
+    font-weight: 600; /* ให้หัวข้อมีความหนานิดนึงจะน่ารักมาก */
     color: #333;
 }
 
 a {
     text-decoration: none;
-    color: #333;
+    color: #4a4a4a;
+    transition: 0.3s;
 }
 
 /* ===== Navbar ===== */
 nav {
     background: #fff;
     padding: 15px 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 nav a {
     margin-right: 16px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 nav a:hover {
-    color: #e91e63;
+    color: #ff5e78; /* สีชมพูดอกไม้ */
 }
 
 /* ===== Layout ===== */
@@ -36,33 +43,38 @@ nav a:hover {
 }
 
 /* ===== Button ===== */
-button {
-    background: #e91e63;
+button, .btn {
+    font-family: 'Mali', cursive !important;
+    background: #ff5e78; /* เปลี่ยนเป็นสีชมพูโทนหวาน */
     color: #fff;
     border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
+    padding: 10px 22px;
+    border-radius: 25px; /* ปรับให้โค้งมนมากขึ้นเพื่อความน่ารัก */
     cursor: pointer;
+    transition: 0.3s;
+    font-weight: 500;
 }
 
-button:hover {
-    background: #d81b60;
+button:hover, .btn:hover {
+    background: #ff4763;
+    transform: scale(1.05); /* เพิ่มลูกเล่นขยายตัวเล็กน้อยเวลาชี้ */
 }
 
 /* ===== Card (ใช้ทั้งเว็บ) ===== */
 .card {
-    border-radius: 18px;
+    border-radius: 25px; /* ปรับความโค้งให้เข้ากับฟอนต์ */
     background: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    padding: 1rem;
-    animation: fadeUp 0.4s ease both;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    border: none;
+    animation: fadeUp 0.6s ease both;
 }
 
 /* ===== Animation ===== */
 @keyframes fadeUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;

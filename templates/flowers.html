@@ -1,55 +1,73 @@
 {% extends "base.html" %}
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/flowers.css') }}">
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-5 fw-bold" style="color: #4a4a4a; letter-spacing: 1px;">
+        แกลเลอรีดอกไม้ของเรา
+    </h2>
 
-<h2 class="mb-4 text-center">เลือกดอกไม้</h2>
-
-<form method="post">
-    <div class="row">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 gallery-container">
         {% for flower in flowers %}
-        <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card flower-card shadow-sm border-0 h-100">
-
-                <div class="flower-box text-center">
-                    <img
-                        src="{{ url_for('static', filename=flower.image) }}"
-                        class="flower-img"
-                        alt="{{ flower.name }}"
-                    >
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm gallery-card" style="border-radius: 20px; overflow: hidden; background: white;">
+                <div class="position-relative gallery-img-container">
+                    <img src="{{ url_for('static', filename=flower.image) }}" 
+                            class="card-img-top img-fluid" 
+                            alt="{{ flower.name }}"
+                            style="height: 250px; object-fit: cover;">
+                    <div class="gallery-overlay d-flex flex-column justify-content-center align-items-center text-center p-3">
+                        <h6 class="text-white fw-bold mb-1">{{ flower.name }}</h6>
+                        <p class="text-white small mb-0">{{ flower.price }} ฿ / ดอก</p>
+                    </div>
                 </div>
-
-                <div class="card-body flower-body text-center">
-                    <h5>{{ flower.name }}</h5>
-                    <p class="text-muted">{{ flower.price }} บาท / ดอก</p>
-
-                    {% if session.get("user_id") %}
-                        <input
-                            type="number"
-                            name="{{ flower.id }}"
-                            min="0"
-                            value="0"
-                            class="form-control text-center"
-                        >
-                    {% else %}
-                        <small class="text-muted">
-                            Login เพื่อเลือกดอกไม้
-                        </small>
-                    {% endif %}
-                </div>
-
             </div>
         </div>
         {% endfor %}
     </div>
+</div>
 
-    {% if session.get("user_id") %}
-    <div class="text-center mt-4">
-        <button type="submit" class="btn btn-danger btn-lg">
-            ถัดไป
-        </button>
-    </div>
-    {% endif %}
-</form>
+<style>
+    /* สไตล์สำหรับแกลเลอรี */
+    .gallery-container {
+        padding: 0 15px;
+    }
+
+    .gallery-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    .gallery-img-container {
+        overflow: hidden;
+    }
+
+    .card-img-top {
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+
+    /* สไตล์สำหรับ overlay */
+    .gallery-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-card:hover .gallery-overlay {
+        opacity: 1;
+    }
+</style>
 
 {% endblock %}

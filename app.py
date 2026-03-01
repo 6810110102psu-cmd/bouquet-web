@@ -102,18 +102,18 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        # ตรวจสอบว่ามีชื่อนี้ในระบบหรือยัง
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            flash("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว", "danger")
+        # เช็กว่าชื่อซ้ำไหม
+        user_exists = User.query.filter_by(username=username).first()
+        if user_exists:
+            flash("ชื่อผู้ใช้นี้มีคนใช้แล้วครับ", "danger")
             return redirect("/register")
 
-        # บันทึกผู้ใช้ใหม่
+        # บันทึกลง DB
         new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
         
-        flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
+        flash("สมัครสมาชิกสำเร็จแล้ว! ลอง Login ดูนะ", "success")
         return redirect("/login")
 
     return render_template("register.html")
@@ -271,7 +271,8 @@ def history():
     if not login_required(): 
         return redirect("/login")
 
-    # ดึงรายการสั่งซื้อทั้งหมดของ User นั้นๆ เรียงจากใหม่ไปเก่า
+    # แก้ไขบรรทัดนี้: เพิ่ม filter_by เพื่อดึงเฉพาะงานของคนที่ล็อกอินอยู่
+    # และใช้ order_by เพื่อให้รายการล่าสุดอยู่ด้านบน
     bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).order_by(Bouquet.created_at.desc()).all()
     
     return render_template("history.html", bouquets=bouquets)

@@ -3,22 +3,21 @@
 <div class="card shadow p-4">
     <h2 class="mb-4 text-center">สรุปรายการจัดช่อดอกไม้</h2>
 
-<h5 class="text-primary">ดอกไม้ที่เลือก</h5>
+<h5 class="text-primary">รายการดอกไม้ที่เลือก</h5>
 <ul class="list-group mb-3">
     {% for item in flower_detail %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item d-flex justify-content-between">
         {{ item.name }} x {{ item.qty }}
         <span>{{ item.subtotal }} บาท</span>
     </li>
     {% endfor %}
-    
     <li class="list-group-item d-flex justify-content-between fw-bold bg-light">
         <span>ค่าจัดช่อ ({{ bouquet.size }})</span>
         <span>{{ fee }} บาท</span>
     </li>
 </ul>
 
-<div class="text-center mt-4">
+<div class="text-center mt-3">
     <h3 class="text-danger">ราคารวมทั้งสิ้น: {{ total }} บาท</h3>
 </div>
 

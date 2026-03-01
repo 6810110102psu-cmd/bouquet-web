@@ -23,15 +23,15 @@
 
                 <form method="POST">
                     <div class="mb-3">
-                        <label class="form-label">Username (ชื่อผู้ใช้)</label>
-                        <input type="text" name="username" class="form-control" required>
+                        <label class="form-label">Username (อย่างน้อย 8 ตัวอักษร)</label>
+                        <input type="text" name="username" class="form-control" minlength="8" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Password (รหัสผ่าน)</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <label class="form-label">Password (อย่างน้อย 8 ตัวอักษร)</label>
+                        <input type="password" name="password" class="form-control" minlength="8" required>
                     </div>
-
+                    
                     <button type="submit" class="btn btn-primary w-100 mb-3">
                         สมัครสมาชิก
                     </button>

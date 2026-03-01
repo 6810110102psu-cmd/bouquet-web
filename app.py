@@ -102,18 +102,28 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        # เช็กว่าชื่อซ้ำไหม
-        user_exists = User.query.filter_by(username=username).first()
-        if user_exists:
-            flash("ชื่อผู้ใช้นี้มีคนใช้แล้วครับ", "danger")
+        # 1. ตรวจสอบความยาวของ Username (ต้อง 8 ตัวขึ้นไป)
+        if len(username) < 8:
+            flash("ชื่อผู้ใช้ (Username) ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
 
-        # บันทึกลง DB
+        # 2. ตรวจสอบความยาวของ Password (ต้อง 8 ตัวขึ้นไป)
+        if len(password) < 8:
+            flash("รหัสผ่าน (Password) ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
+            return redirect("/register")
+
+        # 3. ตรวจสอบว่ามีชื่อนี้ในระบบหรือยัง
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว", "danger")
+            return redirect("/register")
+
+        # บันทึกผู้ใช้ใหม่
         new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()
         
-        flash("สมัครสมาชิกสำเร็จแล้ว! ลอง Login ดูนะ", "success")
+        flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
         return redirect("/login")
 
     return render_template("register.html")

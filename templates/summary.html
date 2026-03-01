@@ -1,43 +1,78 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card shadow p-4">
-    <h2 class="mb-4 text-center">สรุปรายการจัดช่อดอกไม้</h2>
 
-<h5 class="text-primary">รายการดอกไม้ที่เลือก</h5>
-<ul class="list-group mb-3">
-    {% for item in flower_detail %}
-    <li class="list-group-item d-flex justify-content-between">
-        {{ item.name }} x {{ item.qty }}
-        <span>{{ item.subtotal }} บาท</span>
-    </li>
-    {% endfor %}
-    <li class="list-group-item d-flex justify-content-between fw-bold bg-light">
-        <span>ค่าจัดช่อ ({{ bouquet.size }})</span>
-        <span>{{ fee }} บาท</span>
-    </li>
-</ul>
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 p-4 p-md-5" style="border-radius: 30px; background: #ffffff;">
+        <h2 class="mb-4 text-center fw-bold" style="color: #4a4a4a;">🌸 สรุปรายการจัดช่อดอกไม้</h2>
 
-<div class="text-center mt-3">
-    <h3 class="text-danger">ราคารวมทั้งสิ้น: {{ total }} บาท</h3>
-</div>
+        <h5 class="text-danger fw-bold mb-3"><i class="bi bi-flower1 me-2"></i> รายการดอกไม้ที่เลือก</h5>
+        <div class="table-responsive mb-4">
+            <table class="table table-borderless align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="rounded-start">ชื่อดอกไม้</th>
+                        <th class="text-center">จำนวน</th>
+                        <th class="text-end rounded-end">รวม (บาท)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in flower_detail %}
+                    <tr class="border-bottom">
+                        <td class="py-3">{{ item.name }}</td>
+                        <td class="text-center">x {{ item.qty }}</td>
+                        <td class="text-end">{{ "{:,.2f}".format(item.subtotal) }} ฿</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="table-light fw-bold">
+                        <td colspan="2" class="py-3 rounded-start">ค่าธรรมเนียมจัดช่อ ({{ bouquet.size }})</td>
+                        <td class="text-end rounded-end">{{ "{:,.2f}".format(fee) }} ฿</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <hr>
-    <h5 class="text-primary">รายละเอียดการจัดช่อ</h5>
-    <p><strong>สไตล์:</strong> {{ bouquet.style }}</p>
-    <p><strong>ธีม/สีกระดาษ:</strong> {{ bouquet.theme }}</p>
-    <p><strong>ข้อความการ์ด:</strong> {{ bouquet.card }}</p>
+        <div class="text-center py-3 rounded-4 mb-4" style="background-color: #fff9f9; border: 2px dashed #ffc1c1;">
+            <h3 class="text-danger fw-bold mb-0">ราคารวมทั้งสิ้น: {{ "{:,.2f}".format(total) }} บาท</h3>
+        </div>
 
-    <hr>
-    <h5 class="text-primary">ข้อมูลการจัดส่ง</h5>
-    <p><strong>ชื่อผู้รับ:</strong> {{ bouquet.fullname }}</p>
-    <p><strong>เบอร์โทร:</strong> {{ bouquet.phone }}</p>
-    <p><strong>วิธีรับ:</strong> {{ bouquet.method }}</p>
-    <p><strong>รายละเอียด/ที่อยู่:</strong> {{ bouquet.detail }}</p>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="p-4 h-100 rounded-4" style="background-color: #fdf8f8; border: 1px solid #f0f0f0;">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-palette me-2"></i> รายละเอียดการจัดช่อ</h5>
+                    <p class="mb-2"><strong>สไตล์:</strong> {{ bouquet.style }}</p>
+                    <p class="mb-2"><strong>ธีม/สีกระดาษ:</strong> {{ bouquet.theme }}</p>
+                    <p class="mb-2 text-danger"><strong>เนื่องในโอกาส:</strong> {{ bouquet.occasion }}</p> 
+                    <p class="mb-0"><strong>ข้อความการ์ด:</strong> <span class="fst-italic">"{{ bouquet.card }}"</span></p>
+                </div>
+            </div>
 
-    <hr>
-    <div class="text-center">
-        <h3 class="text-danger">ราคารวมทั้งหมด: {{ total }} บาท</h3>
-        <a href="/payment" class="btn btn-danger btn-lg mt-3 w-100">ยืนยันและไปชำระเงิน</a>
+            <div class="col-md-6 mb-4">
+                <div class="p-4 h-100 rounded-4" style="background-color: #f8f9fa; border: 1px solid #eee;">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-truck me-2"></i> ข้อมูลการจัดส่ง</h5>
+                    <p class="mb-2"><strong>ชื่อผู้รับ:</strong> {{ bouquet.fullname }}</p>
+                    <p class="mb-2"><strong>เบอร์โทร:</strong> {{ bouquet.phone }}</p>
+                    <p class="mb-2"><strong>วิธีรับ:</strong> {{ bouquet.method }}</p>
+                    <p class="mb-0"><strong>ที่อยู่/เพิ่มเติม:</strong> {{ bouquet.detail }}</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4 opacity-50">
+
+        <form action="/payment" method="POST" class="text-center">
+            <p class="text-muted small mb-3">* โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยันการสั่งซื้อ</p>
+            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 shadow-sm py-3 fw-bold w-100 w-md-auto">
+                ยืนยันและไปชำระเงิน <i class="bi bi-check-circle-fill ms-2"></i>
+            </button>
+        </form>
     </div>
 </div>
+
+<style>
+    .rounded-4 { border-radius: 1.25rem !important; }
+    .table thead th { font-weight: 600; color: #666; }
+    .btn-danger { background: #ff5e78; border: none; transition: 0.3s; }
+    .btn-danger:hover { background: #ff4763; transform: translateY(-3px); }
+</style>
+
 {% endblock %}

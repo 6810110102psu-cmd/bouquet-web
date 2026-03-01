@@ -37,6 +37,7 @@ class Bouquet(db.Model):
     style = db.Column(db.String(100))
     theme = db.Column(db.String(50))
     card = db.Column(db.Text)
+    occasion = db.Column(db.String(100))
     total_price = db.Column(db.Float)
     
     # ข้อมูลการจัดส่ง
@@ -188,13 +189,22 @@ def select_flowers():
 
 @app.route("/style", methods=["GET", "POST"])
 def style():
-    if not login_required(): return redirect("/login")
+    if not login_required(): 
+        return redirect("/login")
+        
     if request.method == "POST":
+        # รับค่าจากฟอร์มและเก็บลงใน Session ก้อน bouquet
         session["bouquet"]["style"] = request.form.get("style", "-")
         session["bouquet"]["theme"] = request.form.get("theme", "-")
-        session["bouquet"]["card"] = request.form.get("card") if request.form.get("card") else "-"
-        session.modified = True
+        session["bouquet"]["card"] = request.form.get("card", "-")
+        
+        # --- เพิ่มบรรทัดนี้เพื่อรับค่า "เนื่องในโอกาส" ---
+        session["bouquet"]["occasion"] = request.form.get("occasion", "-")
+        # ------------------------------------------
+        
+        session.modified = True # บังคับให้ Flask บันทึกการเปลี่ยนแปลงใน Session
         return redirect("/delivery")
+        
     return render_template("style.html")
 
 @app.route("/delivery", methods=["GET", "POST"])
@@ -243,22 +253,12 @@ def summary():
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
     if not login_required(): return redirect("/login")
-    
     bouquet_data = session.get("bouquet")
     if not bouquet_data: return redirect("/flowers")
 
     if request.method == "POST":
-        fee = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
-        total_price = fee
-        flower_list = []
+        # (ส่วนคำนวณราคาคงเดิม...)
         
-        # คำนวณราคาก่อนบันทึกลง Database
-        for fid, qty in bouquet_data["flowers"].items():
-            flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
-            if flower:
-                total_price += flower["price"] * qty
-                flower_list.append(f"{flower['name']} x {qty}")
-
         new_order = Bouquet(
             user_id=session["user_id"],
             size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
@@ -266,20 +266,22 @@ def payment():
             style=bouquet_data.get("style", "-"),
             theme=bouquet_data.get("theme", "-"),
             card=bouquet_data.get("card", "-"),
+            
+            # ดึงค่า occasion จาก session มาบันทึก
+            occasion=bouquet_data.get("occasion", "-"), 
+            
             receive_date=bouquet_data.get("receive_date"),
             receive_time=bouquet_data.get("receive_time"),
             method=bouquet_data.get("method"),
             detail=bouquet_data.get("detail", "-"),
-            total_price=total_price # ราคาสุทธิที่รวมดอกไม้แล้ว
+            total_price=total_price
         )
-
         db.session.add(new_order)
         db.session.commit()
-
+        # (ส่วนเคลียร์ session คงเดิม...)
         session.pop("bouquet", None) 
         flash("การสั่งซื้อสำเร็จ!", "success")
-        return redirect("/") 
-
+        return redirect("/")
     return render_template("payment.html")
 
 @app.route("/history")

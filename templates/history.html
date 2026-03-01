@@ -37,8 +37,8 @@
                                     <div class="text-center position-relative" style="width: 75px;">
                                         <div class="img-container mb-1">
                                             <img src="{{ url_for('static', filename=flower.image) }}" 
-                                                    class="img-fluid rounded-circle border shadow-sm" 
-                                                    style="width: 65px; height: 65px; object-fit: cover; background: white; border: 3px solid #fff !important;">
+                                                class="img-fluid rounded-circle border shadow-sm" 
+                                                style="width: 65px; height: 65px; object-fit: cover; background: white; border: 3px solid #fff !important;">
                                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm">
                                                 {{ flower.qty }}
                                             </span>
@@ -57,6 +57,7 @@
                                             <li class="mb-1"><strong>ขนาด:</strong> {{ bouquet.size }}</li>
                                             <li class="mb-1"><strong>สไตล์:</strong> {{ bouquet.style }}</li>
                                             <li class="mb-1"><strong>ธีมสี:</strong> {{ bouquet.theme }}</li>
+                                            <li class="mb-1 text-danger"><strong>โอกาส:</strong> {{ bouquet.occasion }}</li>
                                         </ul>
                                     </div>
                                     <div class="col-6">

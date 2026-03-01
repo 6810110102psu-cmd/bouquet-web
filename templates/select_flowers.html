@@ -1,38 +1,94 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>เลือกดอกไม้ลงช่อ</h2>
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-4 fw-bold" style="color: #4a4a4a; letter-spacing: 1px;">
+        เลือกดอกไม้ลงช่อ
+    </h2>
+    
+    <p class="text-center text-muted mb-5">เลื่อนซ้าย-ขวา เพื่อเลือกดอกไม้ที่คุณชอบ</p>
 
-<form method="POST">
-    {% for flower in flowers %}
-    <div style="display:flex; align-items:center; margin-bottom:15px; gap:15px;">
-
-        <!-- รูปดอกไม้ -->
-        <img 
-            src="{{ url_for('static', filename=flower.image) }}" 
-            alt="{{ flower.name }}"
-            width="80"
-            style="border-radius:8px;"
-        >
-
-        <!-- ชื่อ + ราคา -->
-        <div style="width:260px;">
-            <strong>{{ flower.name }}</strong><br>
-            <small>{{ flower.price }} บาท/ดอก</small>
+    <form action="/select-flowers" method="POST">
+        <div class="flower-scroll-wrapper mb-5">
+            <div class="flower-scroll-container">
+                {% for flower in flowers %}
+                <div class="flower-item-card">
+                    <div class="card h-100 border-0 shadow-sm text-center" style="border-radius: 25px; overflow: hidden; background: #fff;">
+                        <img src="{{ url_for('static', filename=flower.image) }}" 
+                            class="card-img-top" 
+                            style="height: 180px; object-fit: cover;">
+                        
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-1" style="font-size: 0.95rem;">{{ flower.name }}</h6>
+                            <p class="text-danger small mb-3">{{ flower.price }} ฿ / ดอก</p>
+                            
+                            <div class="input-group input-group-sm mb-2 justify-content-center">
+                                <input type="number" 
+                                        name="{{ flower.id }}" 
+                                        value="0" 
+                                        min="0" 
+                                        class="form-control text-center rounded-pill shadow-none" 
+                                        style="max-width: 80px; border: 2px solid #f0f0f0;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
-        <!-- จำนวน -->
-        <input 
-            type="number" 
-            name="{{ flower.id }}" 
-            value="0" 
-            min="0"
-            style="width:70px;"
-        >
-    </div>
-    {% endfor %}
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger btn-lg rounded-pill px-5 shadow-sm py-3 fw-bold">
+                <i class="bi bi-arrow-right-circle me-2"></i> เลือกสไตล์การห่อ
+            </button>
+        </div>
+    </form>
+</div>
 
-    <button type="submit">ถัดไป</button>
-</form>
+<style>
+    /* สไตล์สำหรับการเลื่อนแนวนอน */
+    .flower-scroll-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding: 10px 0;
+    }
+
+    .flower-scroll-container {
+        display: flex;
+        overflow-x: auto; /* เปิดการเลื่อนแนวนอน */
+        gap: 20px;
+        padding: 20px 10px;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ซ่อนแถบเลื่อน (Scrollbar) ให้ดูสะอาดตา */
+    .flower-scroll-container::-webkit-scrollbar {
+        height: 8px;
+    }
+    .flower-scroll-container::-webkit-scrollbar-thumb {
+        background: #ffc1c1;
+        border-radius: 10px;
+    }
+    .flower-scroll-container::-webkit-scrollbar-track {
+        background: #fdf8f8;
+    }
+
+    /* กำหนดขนาดการ์ดดอกไม้ในแนวนอน */
+    .flower-item-card {
+        flex: 0 0 200px; /* ฟิกความกว้างของการ์ดแต่ละใบ */
+        transition: transform 0.3s ease;
+    }
+
+    .flower-item-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* ปรับแต่ง input number ให้ดูน่ารัก */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        opacity: 1;
+    }
+</style>
 
 {% endblock %}

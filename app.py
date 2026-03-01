@@ -18,7 +18,6 @@ db = SQLAlchemy(app)
 # Models
 # ------------------
 
-# ฟังก์ชันดึงเวลาปัจจุบันของไทย (GMT+7)
 def get_bangkok_time():
     tz = pytz.timezone('Asia/Bangkok')
     return datetime.now(tz)
@@ -40,7 +39,6 @@ class Bouquet(db.Model):
     occasion = db.Column(db.String(100))
     total_price = db.Column(db.Float)
     
-    # ข้อมูลการจัดส่ง
     receive_date = db.Column(db.String(50))
     receive_time = db.Column(db.String(50))
     method = db.Column(db.String(50))
@@ -122,17 +120,11 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        if len(username) < 8:
-            flash("Username ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
+        if len(username) < 8 or len(password) < 8:
+            flash("Username และ Password ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
-        if len(password) < 8:
-            flash("Password ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
-            return redirect("/register")
-        if not re.search(r"[A-Z]", password):
-            flash("Password ต้องมีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว", "danger")
-            return redirect("/register")
-        if not re.search(r"\d", password):
-            flash("Password ต้องมีตัวเลข (0-9) อย่างน้อย 1 ตัว", "danger")
+        if not re.search(r"[A-Z]", password) or not re.search(r"\d", password):
+            flash("Password ต้องมีตัวพิมพ์ใหญ่และตัวเลขอย่างน้อย 1 ตัว", "danger")
             return redirect("/register")
 
         existing_user = User.query.filter_by(username=username).first()
@@ -144,7 +136,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         
-        flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
+        flash("สมัครสมาชิกสำเร็จ!", "success")
         return redirect("/login")
 
     return render_template("register.html")
@@ -164,7 +156,8 @@ def create_bouquet():
             "flowers": {},
             "style": "",
             "theme": "",
-            "card": "-"
+            "card": "-",
+            "occasion": "-"
         }
         return redirect("/select-flowers")
 
@@ -174,15 +167,21 @@ def create_bouquet():
 def select_flowers():
     if not login_required(): return redirect("/login")
     
-    # ดึงข้อมูลช่อที่เลือกไว้จาก Session
     bouquet_data = session.get("bouquet")
     if not bouquet_data: return redirect("/create-bouquet")
     
-    size_key = bouquet_data["size"] # เช่น 'small', 'medium', 'large'
-    size_info = BOUQUET_SIZE[size_key] # ดึง dict ข้อมูลขนาด
+    #  ดึงเกณฑ์จำนวนส่งไปที่หน้าเว็บ
+    size_info = BOUQUET_SIZE[bouquet_data["size"]]
 
     if request.method == "POST":
-        # (ส่วนบันทึกดอกไม้ลง Session คงเดิม...)
+        selected = {}
+        for f in FLOWERS:
+            qty = int(request.form.get(str(f["id"]), 0))
+            if qty > 0:
+                selected[str(f["id"])] = qty
+
+        session["bouquet"]["flowers"] = selected
+        session.modified = True
         return redirect("/style")
 
     return render_template("select_flowers.html", 
@@ -190,22 +189,17 @@ def select_flowers():
                         bouquet_size_name=size_info["name"],
                         min_qty=size_info["min"], 
                         max_qty=size_info["max"])
+
 @app.route("/style", methods=["GET", "POST"])
 def style():
-    if not login_required(): 
-        return redirect("/login")
+    if not login_required(): return redirect("/login")
         
     if request.method == "POST":
-        # รับค่าจากฟอร์มและเก็บลงใน Session ก้อน bouquet
         session["bouquet"]["style"] = request.form.get("style", "-")
         session["bouquet"]["theme"] = request.form.get("theme", "-")
         session["bouquet"]["card"] = request.form.get("card", "-")
-        
-        # --- เพิ่มบรรทัดนี้เพื่อรับค่า "เนื่องในโอกาส" ---
         session["bouquet"]["occasion"] = request.form.get("occasion", "-")
-        # ------------------------------------------
-        
-        session.modified = True # บังคับให้ Flask บันทึกการเปลี่ยนแปลงใน Session
+        session.modified = True
         return redirect("/delivery")
         
     return render_template("style.html")
@@ -234,7 +228,6 @@ def summary():
     total = fee
     flower_detail = []
 
-    # คำนวณยอดรวมที่หน้า Summary
     for fid, qty in bouquet.get("flowers", {}).items():
         flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
         if flower:
@@ -247,32 +240,23 @@ def summary():
             })
             total += subtotal # รวมราคาดอกไม้จริง
 
-    return render_template("summary.html", 
-                            bouquet=bouquet, 
-                            flower_detail=flower_detail, 
-                            fee=fee, 
-                            total=total)
+    return render_template("summary.html", bouquet=bouquet, flower_detail=flower_detail, fee=fee, total=total)
     
 @app.route("/payment", methods=["GET", "POST"])
 def payment():
-    if not login_required(): 
-        return redirect("/login")
+    if not login_required(): return redirect("/login")
     
     bouquet_data = session.get("bouquet")
-    if not bouquet_data: 
-        return redirect("/flowers")
+    if not bouquet_data: return redirect("/flowers")
 
-    # 1. คำนวณราคาและเตรียมข้อมูลดอกไม้ (สำหรับโชว์ในหน้า Payment)
     flower_list = []
     total_price = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
     for f_id, qty in bouquet_data["flowers"].items():
-        if qty > 0:
-            flower = next((f for f in FLOWERS if f["id"] == int(f_id)), None)
-            if flower:
-                flower_list.append(f"{flower['name']} x {qty}")
-                total_price += flower["price"] * qty
+        flower = next((f for f in FLOWERS if f["id"] == int(f_id)), None)
+        if flower:
+            flower_list.append(f"{flower['name']} x {qty}")
+            total_price += flower["price"] * qty
 
-    # 2. เมื่อกดยืนยันจากหน้า Payment (POST) -> ถึงจะบันทึกจริง
     if request.method == "POST":
         new_order = Bouquet(
             user_id=session["user_id"],
@@ -281,7 +265,7 @@ def payment():
             style=bouquet_data.get("style", "-"),
             theme=bouquet_data.get("theme", "-"),
             card=bouquet_data.get("card", "-"),
-            occasion=bouquet_data.get("occasion", "-"), # บันทึกเนื่องในโอกาส
+            occasion=bouquet_data.get("occasion", "-"),
             receive_date=bouquet_data.get("receive_date"),
             receive_time=bouquet_data.get("receive_time"),
             method=bouquet_data.get("method"),
@@ -291,11 +275,10 @@ def payment():
         db.session.add(new_order)
         db.session.commit()
         
-        session.pop("bouquet", None) # ล้างข้อมูลในตะกร้า
-        session["success_message"] = "ชำระเงินเรียบร้อยแล้ว! ขอบคุณที่ใช้บริการค่ะ" # แจ้งเตือนจะเด้งตอนนี้
-        return redirect("/history") # บันทึกเสร็จค่อยเด้งไปหน้าประวัติ
+        session.pop("bouquet", None)
+        session["success_message"] = "ชำระเงินเรียบร้อยแล้ว!"
+        return redirect("/history")
 
-    # 3. ถ้าเพิ่งกดมาจากหน้า Summary (GET) -> ให้โชว์หน้าจ่ายเงินที่มี QR Code
     return render_template("payment.html", total=total_price)
 
 @app.route("/history")
@@ -307,13 +290,11 @@ def history():
     history_data = []
     for b in bouquets:
         flower_items = []
-        # แยกข้อความดอกไม้ เช่น "White Rose x 2, Lily x 1"
         if b.flowers:
             parts = b.flowers.split(", ")
             for p in parts:
                 if " x " in p:
                     name, qty = p.split(" x ")
-                    # ค้นหารูปภาพจากลิสต์ FLOWERS หลัก
                     flower_info = next((f for f in FLOWERS if f["name"] == name.strip()), None)
                     flower_items.append({
                         "name": name.strip(),
@@ -321,14 +302,10 @@ def history():
                         "image": flower_info["image"] if flower_info else "images/flowers/default.png"
                     })
         
-        history_data.append({
-            "order": b,
-            "flower_items": flower_items
-        })
+        history_data.append({"order": b, "flower_items": flower_items})
     
     return render_template("history.html", history_data=history_data)
 
-# ------------------
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

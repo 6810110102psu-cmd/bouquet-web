@@ -268,11 +268,11 @@ def customize():
 
 @app.route("/history")
 def history():
-    if not login_required(): 
+    if "user_id" not in session:
         return redirect("/login")
 
-    # แก้ไขบรรทัดนี้: เพิ่ม filter_by เพื่อดึงเฉพาะงานของคนที่ล็อกอินอยู่
-    # และใช้ order_by เพื่อให้รายการล่าสุดอยู่ด้านบน
+    # บรรทัดนี้สำคัญมากครับ: 
+    # ต้องใส่ filter_by(user_id=session["user_id"]) เพื่อให้ดึงเฉพาะของคนที่ล็อกอินอยู่เท่านั้น
     bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).order_by(Bouquet.created_at.desc()).all()
     
     return render_template("history.html", bouquets=bouquets)

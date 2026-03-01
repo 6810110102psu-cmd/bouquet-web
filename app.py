@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
+import re
 
 app = Flask(__name__)
 app.secret_key = "bouquet-secret-key"
@@ -102,23 +103,32 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        # 1. ตรวจสอบความยาวของ Username (ต้อง 8 ตัวขึ้นไป)
+        # 1. ตรวจสอบ Username (8 ตัวขึ้นไป)
         if len(username) < 8:
-            flash("ชื่อผู้ใช้ (Username) ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
+            flash("Username ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
 
-        # 2. ตรวจสอบความยาวของ Password (ต้อง 8 ตัวขึ้นไป)
+        # 2. ตรวจสอบความยาว Password (8 ตัวขึ้นไป)
         if len(password) < 8:
-            flash("รหัสผ่าน (Password) ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
+            flash("Password ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
 
-        # 3. ตรวจสอบว่ามีชื่อนี้ในระบบหรือยัง
+        # 3. ตรวจสอบว่ามีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัวหรือไม่
+        if not re.search(r"[A-Z]", password):
+            flash("Password ต้องมีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว", "danger")
+            return redirect("/register")
+
+        # 4. ตรวจสอบว่ามีตัวเลข (0-9) อย่างน้อย 1 ตัวหรือไม่
+        if not re.search(r"\d", password):
+            flash("Password ต้องมีตัวเลข (0-9) อย่างน้อย 1 ตัว", "danger")
+            return redirect("/register")
+
+        # 5. เช็กชื่อซ้ำและบันทึกลงฐานข้อมูล (ส่วนเดิม)
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว", "danger")
             return redirect("/register")
 
-        # บันทึกผู้ใช้ใหม่
         new_user = User(username=username, password=password)
         db.session.add(new_user)
         db.session.commit()

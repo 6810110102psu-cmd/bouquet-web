@@ -4,42 +4,55 @@
     <meta charset="UTF-8">
     <title>Register - สมัครสมาชิก</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-text { font-size: 0.8rem; color: #6c757d; }
+    </style>
 </head>
 <body class="bg-light">
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-4">
-            <div class="card p-4 shadow">
-                <h3 class="text-center mb-3">สมัครสมาชิกใหม่</h3>
+            <div class="card p-4 shadow border-0" style="border-radius: 15px;">
+                <h3 class="text-center mb-4">สมัครสมาชิกใหม่</h3>
 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                            <div class="alert alert-{{ category }} py-2">{{ message }}</div>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
 
                 <form method="POST">
                     <div class="mb-3">
-                        <label class="form-label">Username (อย่างน้อย 8 ตัวอักษร)</label>
-                        <input type="text" name="username" class="form-control" minlength="8" required>
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text" name="username" class="form-control" 
+                            placeholder="ตั้งชื่อผู้ใช้ของคุณ" minlength="8" required>
+                        <div class="form-text mt-1">
+                            * ต้องมีความยาวอย่างน้อย 8 ตัวอักษร
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Password (อย่างน้อย 8 ตัวอักษร)</label>
-                        <input type="password" name="password" class="form-control" minlength="8" required>
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" class="form-control" 
+                            placeholder="ตั้งรหัสผ่านที่ปลอดภัย" minlength="8" required>
+                        <div class="form-text mt-1">
+                            * อย่างน้อย 8 ตัวอักษร, มีตัวพิมพ์ใหญ่ (A-Z) และตัวเลข (0-9)
+                        </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-100 mb-3">
-                        สมัครสมาชิก
+                    <button type="submit" class="btn btn-primary w-100 mb-3 py-2 fw-bold">
+                        สร้างบัญชีผู้ใช้
                     </button>
                 </form>
 
                 <div class="text-center">
                     <hr>
-                    <a href="/login" class="text-decoration-none small">มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่</a>
+                    <a href="/login" class="text-decoration-none small text-primary">
+                        มีบัญชีอยู่แล้ว? เข้าสู่ระบบที่นี่
+                    </a>
                 </div>
             </div>
         </div>

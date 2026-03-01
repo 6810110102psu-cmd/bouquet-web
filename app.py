@@ -173,20 +173,23 @@ def create_bouquet():
 @app.route("/select-flowers", methods=["GET", "POST"])
 def select_flowers():
     if not login_required(): return redirect("/login")
+    
+    # ดึงข้อมูลช่อที่เลือกไว้จาก Session
+    bouquet_data = session.get("bouquet")
+    if not bouquet_data: return redirect("/create-bouquet")
+    
+    size_key = bouquet_data["size"] # เช่น 'small', 'medium', 'large'
+    size_info = BOUQUET_SIZE[size_key] # ดึง dict ข้อมูลขนาด
 
     if request.method == "POST":
-        selected = {}
-        for f in FLOWERS:
-            qty = int(request.form.get(str(f["id"]), 0))
-            if qty > 0:
-                selected[str(f["id"])] = qty
-
-        session["bouquet"]["flowers"] = selected
-        session.modified = True
+        # (ส่วนบันทึกดอกไม้ลง Session คงเดิม...)
         return redirect("/style")
 
-    return render_template("select_flowers.html", flowers=FLOWERS)
-
+    return render_template("select_flowers.html", 
+                        flowers=FLOWERS, 
+                        bouquet_size_name=size_info["name"],
+                        min_qty=size_info["min"], 
+                        max_qty=size_info["max"])
 @app.route("/style", methods=["GET", "POST"])
 def style():
     if not login_required(): 

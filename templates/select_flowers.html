@@ -12,43 +12,52 @@
     </div>
 
     <form action="/select-flowers" method="POST" id="flowerForm">
-        <div class="flower-scroll-wrapper mb-5">
-            <div class="flower-scroll-container">
-                {% for flower in flowers %}
-                <div class="flower-item-card">
-                    <div class="card h-100 border-0 shadow-sm text-center flower-card-hover" style="border-radius: 25px; overflow: hidden; background: #fff;">
-                        <div class="img-zoom-container">
-                            <img src="{{ url_for('static', filename=flower.image) }}" class="card-img-top" style="height: 180px; object-fit: cover;">
-                        </div>
-                        <div class="card-body p-3">
-                            <h6 class="fw-bold mb-1">{{ flower.name }}</h6>
-                            <p class="text-danger small mb-3">{{ flower.price }} ฿ / ดอก</p>
-                            
-                            <div class="d-flex align-items-center justify-content-center gap-2">
-                                <input type="number" name="{{ flower.id }}" value="0" min="0" 
-                                    class="form-control text-center rounded-pill shadow-none flower-qty" 
-                                    style="max-width: 90px; border: 2px solid #ffe5e9; font-weight: bold; color: #ff5e78;">
+        <div class="position-relative container-scroll-wrapper">
+            <button type="button" class="btn-scroll left" onclick="scrollFlowers(-1)">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div class="flower-scroll-wrapper">
+                <div class="flower-scroll-area" id="flowerContainer">
+                    {% for flower in flowers %}
+                    <div class="flower-card-item">
+                        <div class="card h-100 border-0 shadow-sm text-center flower-card-style">
+                            <img src="{{ url_for('static', filename=flower.image) }}" class="card-img-top-fixed">
+                            <div class="card-body-content">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ flower.name }}</h6>
+                                    <p class="text-danger small mb-2">{{ flower.price }} ฿ / ดอก</p>
+                                </div>
+                                <div class="input-bottom">
+                                    <input type="number" name="{{ flower.id }}" value="0" min="0" 
+                                        class="form-control flower-qty mx-auto" 
+                                        style="max-width: 90px; border: 2px solid #ffe5e9; font-weight: bold; color: #ff5e78;">
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
+
+            <button type="button" class="btn-scroll right" onclick="scrollFlowers(1)">
+                <i class="bi bi-chevron-right"></i>
+            </button>
         </div>
 
         <div class="fixed-bottom p-3">
             <div class="container">
-                <div class="card shadow-lg border-0 p-3 mx-auto" style="border-radius: 25px; max-width: 600px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border: 1px solid rgba(255, 94, 120, 0.1);">
+                <div class="card shadow-lg border-0 p-3 mx-auto" style="border-radius: 25px; max-width: 600px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-start">
                             <p class="mb-0 small text-muted">เลือกแล้ว</p>
-                            <h4 class="mb-0 fw-bold"><span id="total-qty" class="text-danger" style="font-size: 1.8rem;">0</span> <span class="text-muted" style="font-size: 1.2rem;">/ {{ max_qty }} ดอก</span></h4>
+                            <h4 class="mb-0 fw-bold"><span id="total-qty" class="text-danger">0</span> / {{ max_qty }} ดอก</h4>
                         </div>
-                        <button type="submit" id="submitBtn" class="btn btn-danger rounded-pill px-4 py-3 fw-bold shadow-sm" disabled style="transition: 0.3s;">
+                        <button type="submit" id="submitBtn" class="btn btn-danger rounded-pill px-4 py-2 fw-bold" disabled>
                             เลือกสไตล์การห่อ <i class="bi bi-arrow-right-circle ms-1"></i>
                         </button>
                     </div>
-                    <div id="qty-alert" class="small mt-2 text-center text-muted italic fw-medium">
+                    <div id="qty-alert" class="small mt-2 text-center text-muted italic">
                         โปรดเลือกอย่างน้อย {{ min_qty }} ดอก
                     </div>
                 </div>
@@ -58,42 +67,71 @@
 </div>
 
 <style>
-    /* แถบเลื่อนแบบซ่อน scrollbar แต่ยังเลื่อนได้ */
-    .flower-scroll-container { 
-        display: flex; 
-        overflow-x: auto; 
-        gap: 20px; 
-        padding: 25px 15px; 
+    /* ตั้งค่าพื้นที่เลื่อน */
+    .flower-scroll-area {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: hidden !important; /* ซ่อนแถบเลื่อนคั้บ */
         scroll-behavior: smooth;
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
-    }
-    .flower-scroll-container::-webkit-scrollbar { display: none; } /* Chrome, Safari */
-
-    .flower-item-card { flex: 0 0 210px; transition: 0.4s; }
-    
-    /* เอฟเฟกต์ขยายรูปเมื่อชี้ */
-    .img-zoom-container { overflow: hidden; }
-    .flower-card-hover:hover .card-img-top {
-        transform: scale(1.1);
-        transition: 0.5s;
-    }
-    .flower-card-hover:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(255, 94, 120, 0.15) !important;
+        padding: 30px 10px;
+        gap: 20px;
     }
 
-    .fixed-bottom { z-index: 1030; }
+    .flower-card-item {
+        flex: 0 0 240px !important; /* บังคับขนาดการ์ดไม่ให้หด */
+    }
+
+    /*  ตกแต่งปุ่มลูกศรให้ลอยขนาบข้าง */
+    .container-scroll-wrapper {
+        padding: 0 50px; /* เว้นพื้นที่ให้ปุ่ม */
+    }
+
+    .btn-scroll {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 45px;
+        height: 45px;
+        background: white;
+        border: 2px solid #ffe5e9;
+        color: #ff5e78;
+        border-radius: 50%;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(255, 94, 120, 0.15);
+        transition: 0.3s;
+    }
+
+    .btn-scroll:hover {
+        background: #ff5e78;
+        color: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .btn-scroll.left { left: 0; }
+    .btn-scroll.right { right: 0; }
+
+    /* สไตล์การ์ด */
+    .flower-card-style { border-radius: 25px; min-height: 400px; background: white; }
+    .card-img-top-fixed { height: 180px; object-fit: cover; }
+    .card-body-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
     .italic { font-style: italic; }
-
-    /* เมื่อช่อง input มีค่ามากกว่า 0 ให้เปลี่ยนสีขอบ */
-    .flower-qty:not([value="0"]) {
-        border-color: #ff5e78 !important;
-        background-color: #fff9f9;
-    }
 </style>
 
 <script>
+    //  ฟังก์ชันเลื่อนการ์ดดอกไม้
+    function scrollFlowers(direction) {
+        const container = document.getElementById('flowerContainer');
+        const scrollAmount = 260; // เลื่อนทีละ 1 การ์ดรวม gap
+        container.scrollBy({
+            left: direction * scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+
+    // ตัวนับดอกไม้ (JS เดิมของคุณที่ทำงานดีอยู่แล้วคั้บ)
     const minQty = {{ min_qty }};
     const maxQty = {{ max_qty }};
     const qtyInputs = document.querySelectorAll('.flower-qty');
@@ -103,42 +141,23 @@
 
     function updateSummary() {
         let total = 0;
-        qtyInputs.forEach(input => {
-            const val = parseInt(input.value) || 0;
-            total += val;
-            
-            // เปลี่ยนสีขอบ input ถ้ามีจำนวน
-            if (val > 0) {
-                input.style.borderColor = "#ff5e78";
-                input.style.backgroundColor = "#fff9f9";
-            } else {
-                input.style.borderColor = "#f0f0f0";
-                input.style.backgroundColor = "#fff";
-            }
-        });
-
+        qtyInputs.forEach(input => total += parseInt(input.value) || 0);
         totalDisplay.innerText = total;
 
-        // เช็กเงื่อนไขเกณฑ์จำนวน
         if (total < minQty) {
             submitBtn.disabled = true;
-            submitBtn.style.opacity = "0.5";
             qtyAlert.innerText = `ยังขาดอีก ${minQty - total} ดอก ถึงจะจัดช่อได้คั้บ`;
-            qtyAlert.className = "small mt-2 text-center text-muted italic";
         } else if (total > maxQty) {
             submitBtn.disabled = true;
-            submitBtn.style.opacity = "0.5";
-            qtyAlert.innerText = `เลือกเกินจำนวนที่กำหนด (สูงสุด ${maxQty} ดอก)`;
-            qtyAlert.className = "small mt-2 text-center text-danger fw-bold";
+            qtyAlert.innerText = `เกินจำนวนสูงสุด ${maxQty} ดอกคั้บ`;
         } else {
             submitBtn.disabled = false;
-            submitBtn.style.opacity = "1";
             qtyAlert.innerText = "จำนวนดอกไม้ครบตามเกณฑ์แล้ว!";
-            qtyAlert.className = "small mt-2 text-center text-success fw-bold";
         }
     }
 
     qtyInputs.forEach(input => input.addEventListener('input', updateSummary));
     updateSummary();
 </script>
+
 {% endblock %}

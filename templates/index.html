@@ -1,52 +1,66 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if not session.get("user_id") %}
-
-<h2 class="mb-4 text-center">ช่อดอกไม้แนะนำ</h2>
-
-<div class="row">
-    {% for bouquet in bouquets %}
-    <div class="col-md-4 mb-4">
-        <div class="gift-card h-100">
-            <div class="gift-image text-center">
-                <img
-                    src="{{ url_for('static', filename=bouquet.image) }}"
-                    class="img-fluid"
-                    alt="{{ bouquet.name }}"
-                >
-            </div>
-
-            <div class="gift-body p-3">
-                <h5 class="gift-title text-center">
-                    {{ bouquet.name }}
-                </h5>
-                <p class="gift-desc">
-                    {{ bouquet.description }}
-                </p>
-            </div>
+<div class="hero-section text-center py-5 mb-5 rounded-5 shadow-sm" 
+    style="background: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%); border: 1px solid #ffeef1;">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold mb-3" style="color: #ff5e78; letter-spacing: -1px;">
+            สร้างความสุขด้วย "ช่อดอกไม้" ของคุณเอง 
+        </h1>
+        <p class="lead text-muted mb-4 fs-4">
+            ยินดีต้อนรับคุณ <span class="fw-bold text-dark">{{ session.get('username') }}</span> <br>
+            ร้านของเราให้คุณออกแบบ จัดลูป และเลือกดอกไม้ที่ใช่ เพื่อมอบให้คนพิเศษในทุกโอกาส
+        </p>
+        <div class="d-grid gap-2 d-md-block">
+            <a href="/create-bouquet" class="btn btn-danger btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold border-0" 
+                style="background: linear-gradient(45deg, #ff5e78, #ff8a9b); transition: 0.3s;">
+                <i class="bi bi-magic me-2"></i> เริ่มจัดช่อดอกไม้เลย
+            </a>
+            <a href="/flowers" class="btn btn-outline-secondary btn-lg rounded-pill px-5 py-3 ms-md-2 fw-bold">
+                ชมแกลเลอรีดอกไม้
+            </a>
         </div>
     </div>
-    {% endfor %}
 </div>
 
-<div class="text-center mt-4">
-    <a href="/login" class="btn btn-dark btn-lg">
-        Login เพื่อเริ่มจัดช่อดอกไม้
-    </a>
+<div class="row g-4 text-center">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-up">
+            <div class="icon-box mb-3 mx-auto" style="width: 70px; height: 70px; line-height: 70px; background: #fff0f3; border-radius: 50%;">
+                <i class="bi bi-flower1 fs-2" style="color: #ff5e78;"></i>
+            </div>
+            <h5 class="fw-bold">ดอกไม้สดใหม่</h5>
+            <p class="text-muted small">เราคัดสรรดอกไม้เกรดพรีเมียมหลากหลายสายพันธุ์ เพื่อความสวยงามที่ยาวนานที่สุด</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-up">
+            <div class="icon-box mb-3 mx-auto" style="width: 70px; height: 70px; line-height: 70px; background: #fff0f3; border-radius: 50%;">
+                <i class="bi bi-palette fs-2" style="color: #ff5e78;"></i>
+            </div>
+            <h5 class="fw-bold">ดีไซน์ตามใจคุณ</h5>
+            <p class="text-muted small">เลือกขนาด สไตล์การห่อ และโทนสีได้เอง ให้ออกมาเป็นช่อเดียวในโลกสำหรับคุณ</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4 hover-up">
+            <div class="icon-box mb-3 mx-auto" style="width: 70px; height: 70px; line-height: 70px; background: #fff0f3; border-radius: 50%;">
+                <i class="bi bi-truck fs-2" style="color: #ff5e78;"></i>
+            </div>
+            <h5 class="fw-bold">ส่งตรงถึงมือ</h5>
+            <p class="text-muted small">บริการจัดส่งรวดเร็ว พร้อมการ์ดข้อความที่คุณเขียนเองจากใจ</p>
+        </div>
+    </div>
 </div>
 
-{% else %}
-
-<div class="text-center">
-    <h2 class="mb-3">ยินดีต้อนรับ {{ session.username }}</h2>
-    <p class="mb-4">เริ่มต้นจัดช่อดอกไม้ในแบบของคุณได้เลย</p>
-
-    <a href="/create-bouquet" class="btn btn-danger btn-lg">
-        เริ่มจัดช่อดอกไม้
-    </a>
-</div>
-
-{% endif %}
+<style>
+    .hover-up {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-up:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(255, 94, 120, 0.1) !important;
+    }
+</style>
 
 {% endblock %}

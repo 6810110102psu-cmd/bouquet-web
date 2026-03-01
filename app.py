@@ -263,7 +263,7 @@ def payment():
     if not bouquet_data: return redirect("/flowers")
 
     if request.method == "POST":
-        # คำนวณราคาและเตรียมรายการดอกไม้
+        # คำนวณราคารวมที่รวมค่าดอกไม้แล้ว
         fee = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
         total_price = fee
         flower_list = []
@@ -274,7 +274,7 @@ def payment():
                 total_price += flower["price"] * qty
                 flower_list.append(f"{flower['name']} x {qty}")
 
-        # บันทึกลง Database (เพิ่มคอลัมน์ให้ครบตามที่หน้า History ต้องการโชว์)
+        # บันทึกลง Database ด้วยราคา total_price ที่รวมแล้ว
         new_order = Bouquet(
             user_id=session["user_id"],
             size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
@@ -282,21 +282,18 @@ def payment():
             style=bouquet_data.get("style", "-"),
             theme=bouquet_data.get("theme", "-"),
             card=bouquet_data.get("card", "-"),
-    
-        # ดึงค่าจาก session มาบันทึก
             receive_date=bouquet_data.get("receive_date"),
             receive_time=bouquet_data.get("receive_time"),
             method=bouquet_data.get("method"),
             detail=bouquet_data.get("detail", "-"),
-    
-            total_price=total_price
+            total_price=total_price # ยอดรวมที่รวมค่าดอกไม้เรียบร้อย
         )
 
         db.session.add(new_order)
         db.session.commit()
 
         session.pop("bouquet", None) 
-        flash("สั่งซื้อและบันทึกข้อมูลเรียบร้อยแล้ว!", "success")
+        flash("การสั่งซื้อสำเร็จ!", "success")
         return redirect("/") 
 
     return render_template("payment.html")

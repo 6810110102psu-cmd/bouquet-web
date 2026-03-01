@@ -254,6 +254,7 @@ def payment():
     if not bouquet_data: return redirect("/flowers")
 
     if request.method == "POST":
+        # คำนวณราคาและเตรียมรายการดอกไม้
         fee = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
         total_price = fee
         flower_list = []
@@ -264,28 +265,30 @@ def payment():
                 total_price += flower["price"] * qty
                 flower_list.append(f"{flower['name']} x {qty}")
 
-        # ส่วนที่แก้ไข: ดึง name ออกมาให้ถูกต้อง
+        # บันทึกลง Database (เพิ่มคอลัมน์ให้ครบตามที่หน้า History ต้องการโชว์)
         new_order = Bouquet(
-                user_id=session["user_id"],
-                size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
-                flowers=", ".join(flower_list),
-                style=bouquet_data.get("style", "-"),
-                theme=bouquet_data.get("theme", "-"),
-                card=bouquet_data.get("card", "-"),
-                receive_date=bouquet_data.get("receive_date"), # เพิ่มส่วนนี้
-                receive_time=bouquet_data.get("receive_time"), # เพิ่มส่วนนี้
-                method=bouquet_data.get("method"),             # เพิ่มส่วนนี้
-                detail=bouquet_data.get("detail"),             # เพิ่มส่วนนี้
-                total_price=total_price
-            )
+            user_id=session["user_id"],
+            size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
+            flowers=", ".join(flower_list),
+            style=bouquet_data.get("style", "-"),
+            theme=bouquet_data.get("theme", "-"),
+            card=bouquet_data.get("card", "-"),
+            
+            # --- ส่วนที่เพิ่มใหม่เพื่อให้หน้า History แสดงผลได้ ---
+            receive_date=bouquet_data.get("receive_date"), # วันที่รับ
+            receive_time=bouquet_data.get("receive_time"), # เวลารับ
+            method=bouquet_data.get("method"),             # วิธีรับสินค้า
+            detail=bouquet_data.get("detail", "-"),        # ที่อยู่/เพิ่มเติม
+            # ----------------------------------------------
+            
+            total_price=total_price
+        )
 
         db.session.add(new_order)
         db.session.commit()
 
-        session.pop("bouquet", None) # ล้างค่าตะกร้าออก
-        flash("การสั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการค่ะ", "success")
-        
-        # เด้งกลับไปหน้าแรก (index) ตามต้องการ
+        session.pop("bouquet", None) 
+        flash("สั่งซื้อและบันทึกข้อมูลเรียบร้อยแล้ว!", "success")
         return redirect("/") 
 
     return render_template("payment.html")

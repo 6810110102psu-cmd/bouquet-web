@@ -1,15 +1,15 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-import json
 import re
-from datetime import datetime
 import pytz
 from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "bouquet-secret-key"
 
+# ------------------
+# Database Config
+# ------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -20,9 +20,7 @@ db = SQLAlchemy(app)
 
 # ฟังก์ชันดึงเวลาปัจจุบันของไทย (GMT+7)
 def get_bangkok_time():
-    # กำหนดโซนเวลาเป็น Asia/Bangkok
     tz = pytz.timezone('Asia/Bangkok')
-    # ดึงเวลาปัจจุบันตามโซนที่กำหนด
     return datetime.now(tz)
 
 class User(db.Model):
@@ -41,37 +39,37 @@ class Bouquet(db.Model):
     card = db.Column(db.Text)
     total_price = db.Column(db.Float)
     
+    # ข้อมูลการจัดส่ง
     receive_date = db.Column(db.String(50))
     receive_time = db.Column(db.String(50))
     method = db.Column(db.String(50))
     detail = db.Column(db.Text)
-    # -----------------------------------
     
     created_at = db.Column(db.DateTime, default=get_bangkok_time)
 
 # ------------------
-# Static Flower Data
+# Static Data
 # ------------------
 FLOWERS = [
-        {"id": 1, "name": "Lily of the Valley", "price": 120, "image": "images/flowers/1.png"},
-        {"id": 2, "name": "White Rose", "price": 40, "image": "images/flowers/2.png"},
-        {"id": 3, "name": "Dusty Purple Rose", "price": 60, "image": "images/flowers/3.png"},
-        {"id": 4, "name": "Waxflower", "price": 30, "image": "images/flowers/4.png"},
-        {"id": 5, "name": "Carnation", "price": 25, "image": "images/flowers/5.png"},
-        {"id": 6, "name": "Gerbera", "price": 30, "image": "images/flowers/6.png"},
-        {"id": 7, "name": "Hydrangea", "price": 150, "image": "images/flowers/7.png"},
-        {"id": 8, "name": "Tulip", "price": 80, "image": "images/flowers/8.png"},
-        {"id": 9, "name": "Hyacinth", "price": 70, "image": "images/flowers/9.png"},
-        {"id": 10, "name": "Calla Lily", "price": 90, "image": "images/flowers/10.png"},
-        {"id": 11, "name": "Phalaenopsis Orchid", "price": 180, "image": "images/flowers/11.png"},
-        {"id": 12, "name": "Marigold", "price": 15, "image": "images/flowers/12.png"},
-        {"id": 13, "name": "Daisy", "price": 20, "image": "images/flowers/13.png"},
-        {"id": 14, "name": "Anthurium", "price": 100, "image": "images/flowers/14.png"},
-        {"id": 15, "name": "Sunflower", "price": 35, "image": "images/flowers/15.png"},
-        {"id": 16, "name": "Aster", "price": 25, "image": "images/flowers/16.png"},
-        {"id": 17, "name": "Gypsophila", "price": 20, "image": "images/flowers/17.png"},
-        {"id": 18, "name": "Lily", "price": 90, "image": "images/flowers/18.png"},
-        {"id": 19, "name": "Eucalyptus", "price": 35, "image": "images/flowers/19.png"},
+    {"id": 1, "name": "Lily of the Valley", "price": 120, "image": "images/flowers/1.png"},
+    {"id": 2, "name": "White Rose", "price": 40, "image": "images/flowers/2.png"},
+    {"id": 3, "name": "Dusty Purple Rose", "price": 60, "image": "images/flowers/3.png"},
+    {"id": 4, "name": "Waxflower", "price": 30, "image": "images/flowers/4.png"},
+    {"id": 5, "name": "Carnation", "price": 25, "image": "images/flowers/5.png"},
+    {"id": 6, "name": "Gerbera", "price": 30, "image": "images/flowers/6.png"},
+    {"id": 7, "name": "Hydrangea", "price": 150, "image": "images/flowers/7.png"},
+    {"id": 8, "name": "Tulip", "price": 80, "image": "images/flowers/8.png"},
+    {"id": 9, "name": "Hyacinth", "price": 70, "image": "images/flowers/9.png"},
+    {"id": 10, "name": "Calla Lily", "price": 90, "image": "images/flowers/10.png"},
+    {"id": 11, "name": "Phalaenopsis Orchid", "price": 180, "image": "images/flowers/11.png"},
+    {"id": 12, "name": "Marigold", "price": 15, "image": "images/flowers/12.png"},
+    {"id": 13, "name": "Daisy", "price": 20, "image": "images/flowers/13.png"},
+    {"id": 14, "name": "Anthurium", "price": 100, "image": "images/flowers/14.png"},
+    {"id": 15, "name": "Sunflower", "price": 35, "image": "images/flowers/15.png"},
+    {"id": 16, "name": "Aster", "price": 25, "image": "images/flowers/16.png"},
+    {"id": 17, "name": "Gypsophila", "price": 20, "image": "images/flowers/17.png"},
+    {"id": 18, "name": "Lily", "price": 90, "image": "images/flowers/18.png"},
+    {"id": 19, "name": "Eucalyptus", "price": 35, "image": "images/flowers/19.png"},
 ]
 
 BOUQUET_SIZE = {
@@ -92,6 +90,7 @@ def login_required():
 # ------------------
 # Routes
 # ------------------
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -122,27 +121,19 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        # 1. ตรวจสอบ Username (8 ตัวขึ้นไป)
         if len(username) < 8:
             flash("Username ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
-
-        # 2. ตรวจสอบความยาว Password (8 ตัวขึ้นไป)
         if len(password) < 8:
             flash("Password ต้องมีความยาวอย่างน้อย 8 ตัวอักษร", "danger")
             return redirect("/register")
-
-        # 3. ตรวจสอบว่ามีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัวหรือไม่
         if not re.search(r"[A-Z]", password):
             flash("Password ต้องมีตัวพิมพ์ใหญ่ (A-Z) อย่างน้อย 1 ตัว", "danger")
             return redirect("/register")
-
-        # 4. ตรวจสอบว่ามีตัวเลข (0-9) อย่างน้อย 1 ตัวหรือไม่
         if not re.search(r"\d", password):
             flash("Password ต้องมีตัวเลข (0-9) อย่างน้อย 1 ตัว", "danger")
             return redirect("/register")
 
-        # 5. เช็กชื่อซ้ำและบันทึกลงฐานข้อมูล (ส่วนเดิม)
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว", "danger")
@@ -162,13 +153,9 @@ def logout():
     session.clear()
     return redirect("/")
 
-# ------------------
-# Create Bouquet (ต้อง login)
-# ------------------
 @app.route("/create-bouquet", methods=["GET", "POST"])
 def create_bouquet():
-    if not login_required():
-        return redirect("/login")
+    if not login_required(): return redirect("/login")
 
     if request.method == "POST":
         session["bouquet"] = {
@@ -184,8 +171,7 @@ def create_bouquet():
 
 @app.route("/select-flowers", methods=["GET", "POST"])
 def select_flowers():
-    if not login_required():
-        return redirect("/login")
+    if not login_required(): return redirect("/login")
 
     if request.method == "POST":
         selected = {}
@@ -195,6 +181,7 @@ def select_flowers():
                 selected[str(f["id"])] = qty
 
         session["bouquet"]["flowers"] = selected
+        session.modified = True
         return redirect("/style")
 
     return render_template("select_flowers.html", flowers=FLOWERS)
@@ -203,11 +190,10 @@ def select_flowers():
 def style():
     if not login_required(): return redirect("/login")
     if request.method == "POST":
-        # เก็บข้อมูลสไตล์และธีมลง Session ให้ครบ
         session["bouquet"]["style"] = request.form.get("style", "-")
         session["bouquet"]["theme"] = request.form.get("theme", "-")
         session["bouquet"]["card"] = request.form.get("card") if request.form.get("card") else "-"
-        session.modified = True # บังคับให้ Flask บันทึกการเปลี่ยนแปลงใน Session
+        session.modified = True
         return redirect("/delivery")
     return render_template("style.html")
 
@@ -215,10 +201,11 @@ def style():
 def delivery():
     if not login_required(): return redirect("/login")
     if request.method == "POST":
-        # เก็บข้อมูลการจัดส่งลงในก้อน bouquet
         session["bouquet"]["fullname"] = request.form.get("fullname")
         session["bouquet"]["phone"] = request.form.get("phone")
         session["bouquet"]["method"] = request.form.get("method")
+        session["bouquet"]["receive_date"] = request.form.get("receive_date")
+        session["bouquet"]["receive_time"] = request.form.get("receive_time")
         session["bouquet"]["detail"] = request.form.get("detail")
         session.modified = True
         return redirect("/summary")
@@ -226,18 +213,16 @@ def delivery():
 
 @app.route("/summary")
 def summary():
-    if "user_id" not in session: return redirect("/login")
+    if not login_required(): return redirect("/login")
     bouquet = session.get("bouquet")
     if not bouquet: return redirect("/flowers")
 
-    # ดึงค่าธรรมเนียมจัดช่อ (Base Fee)
     fee = BOUQUET_SIZE[bouquet["size"]]["fee"]
     total = fee
     flower_detail = []
 
-    # วนลูปหาดอกไม้เพื่อรวมราคา
+    # คำนวณยอดรวมที่หน้า Summary
     for fid, qty in bouquet.get("flowers", {}).items():
-        # ค้นหาข้อมูลดอกไม้จาก list FLOWERS หลัก
         flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
         if flower:
             subtotal = flower["price"] * qty
@@ -247,7 +232,7 @@ def summary():
                 "price": flower["price"],
                 "subtotal": subtotal
             })
-            total += subtotal # บวกราคาดอกไม้เข้าไปในยอดรวม
+            total += subtotal # รวมราคาดอกไม้จริง
 
     return render_template("summary.html", 
                             bouquet=bouquet, 
@@ -263,18 +248,17 @@ def payment():
     if not bouquet_data: return redirect("/flowers")
 
     if request.method == "POST":
-        # คำนวณราคารวมที่รวมค่าดอกไม้แล้ว
         fee = BOUQUET_SIZE[bouquet_data["size"]]["fee"]
         total_price = fee
         flower_list = []
         
+        # คำนวณราคาก่อนบันทึกลง Database
         for fid, qty in bouquet_data["flowers"].items():
             flower = next((f for f in FLOWERS if f["id"] == int(fid)), None)
             if flower:
                 total_price += flower["price"] * qty
                 flower_list.append(f"{flower['name']} x {qty}")
 
-        # บันทึกลง Database ด้วยราคา total_price ที่รวมแล้ว
         new_order = Bouquet(
             user_id=session["user_id"],
             size=BOUQUET_SIZE[bouquet_data["size"]]["name"],
@@ -286,7 +270,7 @@ def payment():
             receive_time=bouquet_data.get("receive_time"),
             method=bouquet_data.get("method"),
             detail=bouquet_data.get("detail", "-"),
-            total_price=total_price # ยอดรวมที่รวมค่าดอกไม้เรียบร้อย
+            total_price=total_price # ราคาสุทธิที่รวมดอกไม้แล้ว
         )
 
         db.session.add(new_order)
@@ -298,27 +282,11 @@ def payment():
 
     return render_template("payment.html")
 
-@app.route("/customize", methods=["POST"])
-def customize():
-    bouquet = session.get("bouquet", {})
-
-    bouquet["style"] = request.form.get("style", "")
-    bouquet["theme"] = request.form.get("theme", "")
-    bouquet["card"] = request.form.get("card", "")
-
-    session["bouquet"] = bouquet
-
-    return redirect("/summary")
-
 @app.route("/history")
 def history():
-    if "user_id" not in session:
-        return redirect("/login")
+    if not login_required(): return redirect("/login")
 
-    # บรรทัดนี้สำคัญมากครับ: 
-    # ต้องใส่ filter_by(user_id=session["user_id"]) เพื่อให้ดึงเฉพาะของคนที่ล็อกอินอยู่เท่านั้น
     bouquets = Bouquet.query.filter_by(user_id=session["user_id"]).order_by(Bouquet.created_at.desc()).all()
-    
     return render_template("history.html", bouquets=bouquets)
 
 # ------------------

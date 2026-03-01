@@ -96,6 +96,28 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        # ตรวจสอบว่ามีชื่อนี้ในระบบหรือยัง
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว", "danger")
+            return redirect("/register")
+
+        # บันทึกผู้ใช้ใหม่
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ", "success")
+        return redirect("/login")
+
+    return render_template("register.html")
+
 @app.route("/logout")
 def logout():
     session.clear()
